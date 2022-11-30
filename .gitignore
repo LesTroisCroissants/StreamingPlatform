@@ -1,5 +1,7 @@
 # Our own gitignore things
-./Data/
+Data
+.idea
+StreamingPlatform/.idea
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,visualstudiocode,java
