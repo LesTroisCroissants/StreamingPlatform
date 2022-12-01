@@ -3,6 +3,8 @@ package domain;
 import java.util.List;
 import java.util.Set;
 
+import data.DataAccess;
+
 public class MediaRegistry implements MediaInfo {
     private List<Media> movies;
     private List<Media> series;
@@ -15,7 +17,7 @@ public class MediaRegistry implements MediaInfo {
     }
 
     @Override
-    public List<Media> filter(String category) {
+    public List<Media> filter(String category, int yearFrom, int yearTo, int rating) {
         // Implement filter function
         return null;
     }
@@ -23,7 +25,7 @@ public class MediaRegistry implements MediaInfo {
     @Override
     public void initialize() {
         // Get data from data-layer
-        
+        ;
     }
 
     public List<Media> getMovies() {
