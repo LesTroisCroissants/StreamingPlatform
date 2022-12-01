@@ -10,10 +10,30 @@ import org.junit.Test;
 public class DataTests {
 	private Data data;
 
+	private String dataPath = "StreamingPlatform/src/data/Data/";
+	private String moviePath = dataPath + "film.txt";
+	private String seriesPath = "serier.txt";
+
+	
 	@Test
-	public void TestReadFile(){
-		data = new Data();
-		String str = data.readMovies();
+	public void TestCategorySet(){
+		try {
+			data = new Data();
+			System.out.println(data.getCategories().toString());
+		} catch (Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+	@Test
+	public void TestGetMovieInfo(){
+		try {
+			data = new Data();
+			System.out.println(data.getMovieInfo().toString());
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+
 	}
 
 	@Before
