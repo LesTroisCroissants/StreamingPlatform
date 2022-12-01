@@ -1,5 +1,5 @@
 # Our own gitignore things
-Data
+./Data
 .idea
 StreamingPlatform/.idea
 
