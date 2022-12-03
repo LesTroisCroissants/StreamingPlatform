@@ -12,7 +12,7 @@ public class DataTests {
 
 	private String dataPath = "StreamingPlatform/src/data/Data/";
 	private String moviePath = dataPath + "film.txt";
-	private String seriesPath = "serier.txt";
+	private String seriesPath = dataPath + "serier.txt";
 
 	
 	@Test
@@ -34,6 +34,16 @@ public class DataTests {
 			System.out.println(e.getMessage());
 		}
 
+	}
+
+	@Test
+	public void TestGetSeriesInfo(){
+		try {
+			data = new Data();
+			System.out.println(data.getSeriesInfo().toString());
+		} catch (Exception e){
+			System.out.println(e.getMessage());
+		}
 	}
 
 	@Before

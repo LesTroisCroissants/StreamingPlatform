@@ -11,24 +11,38 @@ public class Data implements DataAccess {
     private String dataPath = "StreamingPlatform/src/data/Data/";
     private String moviePath = dataPath + "film.txt";
     private String movieCoverImgPath = "StreamingPlatform/src/data/Data/filmplakater/";
-    private String seriesPath = "serier.txt";
+    private String seriesPath = dataPath + "serier.txt";
     private String seriesCoverImgPath = "StreamingPlatform/src/data/Data/serieforsider/";
 
 
-    private String categoriesString = "Talk-show, Documentary, Crime, Drama, Action, Adventure, Drama, Comedy, Fantasy, Animation, Horror, Sci-fi, War, Thriller, Mystery, Biography, History, Family, Western, Romance, Sport";
     private HashSet<String> categorySet = new HashSet<>();
 
-    private ArrayList<String> movieInfo = new ArrayList<>();
+    private ArrayList<String> movieInfo;
+    private ArrayList<String> seriesInfo;
 
     public Data() throws FileNotFoundException{
-        stringToHashSet();
-        movieInfo = formatMovieData();
+        // Getting and formatting data from the files
+        movieInfo = formatFileData(moviePath);
+        seriesInfo = formatFileData(seriesPath);
+
+        HashSet<ArrayList<String>> fileLists = new HashSet<>();
+        fileLists.add(movieInfo);
+        fileLists.add(seriesInfo);
+
+        loadCategoriesToHashSet(fileLists);
     }
 
-    private void stringToHashSet() {
-        String[] CategoryArray = categoriesString.split(", ");
-        for (String string : CategoryArray) {
-            categorySet.add(string);
+    // TODO Check that this function gives the correct categories
+    private void loadCategoriesToHashSet(HashSet<ArrayList<String>> dataArrays) {
+        for (ArrayList<String> lines : dataArrays){
+            for (String line : lines){
+                String[] lineArray = line.split(";");
+                String[] categories = lineArray[2].split(",");// 2 because the categories always are the third element in the line
+
+                for (String category : categories) {
+                    categorySet.add(category.strip());
+                }
+            }
         }
     }
 
@@ -48,23 +62,28 @@ public class Data implements DataAccess {
         return array;
     }
 
-    private ArrayList<String> formatMovieData() throws FileNotFoundException{
-        // titel; årstal; kategori1, kategori2, ..; rating
-        ArrayList<String> fileLines = loadFileToArray(moviePath);
+    // TODO check that this returns something for serier.txt
+    private ArrayList<String> formatFileData(String path) throws FileNotFoundException{
+        String coverPath;
 
+        if (path.equals(moviePath)){
+            // titel; årstal; kategori1, kategori2, ..; rating
+            coverPath = movieCoverImgPath;
+        } else if (path.equals(seriesPath)) {
+            // titel; årtalFra-årstalTil; kategori1, kategori2, ..; rating; sæsonnummer-antalEpisoder, sæsonnummer-antalEpisoder...;
+            coverPath = seriesCoverImgPath;
+        } else {
+            System.out.println("An incorrect path was specified to format the data!");
+            return null;
+        }
+
+        ArrayList<String> fileLines = loadFileToArray(path);
         for (int i = 0; i < fileLines.size(); i++) {
-            String movieName = fileLines.get(i).split(";")[0];
-            fileLines.set(i, fileLines.get(i) + movieCoverImgPath + movieName + ".png;");
-
+            String mediaName = fileLines.get(i).split(";")[0];
+            fileLines.set(i, fileLines.get(i) + coverPath + mediaName + ".png;");
         }
         return fileLines;
     }
-
-//    String readSeries() {
-//        // titel; årtalFra-årstalTil; kategori1, kategori2, ..; rating; sæsonnummer-antalEpisoder, sæsonnummer-antalEpisoder...;
-//        loadFileToArray(seriesPath);
-//        return null;
-//    }
 
     @Override
     public HashSet<String> getCategories() {
@@ -78,8 +97,7 @@ public class Data implements DataAccess {
 
     @Override
     public List<String> getSeriesInfo() {
-        // TODO Auto-generated method stub
-        return null;
+        return seriesInfo;
     }
 
 }
