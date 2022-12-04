@@ -1,9 +1,8 @@
 # Our own gitignore things
 Data/*
-/Data/
+/StreamingPlatform/src/data/Data/
 .idea
 StreamingPlatform/.idea
-
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,visualstudiocode,java
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,visualstudiocode,java
