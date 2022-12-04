@@ -14,4 +14,7 @@ public class Season {
         this.episodes = episodes;
     }
 
+    public List<Episode> getEpisodes(){
+        return episodes;
+    }
 }

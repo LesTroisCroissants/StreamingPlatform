@@ -20,4 +20,7 @@ public class Series extends Media{
         this.seasons = seasons;
     }
 
+    public List<Season> getSeasons() {
+        return seasons;
+    }
 }
