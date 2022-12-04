@@ -10,9 +10,9 @@ import org.junit.Test;
 public class DataTests {
 	private Data data;
 
-	private String dataPath = "StreamingPlatform/src/data/Data/";
-	private String moviePath = dataPath + "film.txt";
-	private String seriesPath = dataPath + "serier.txt";
+	private final String dataPath = "StreamingPlatform/src/data/Data/";
+	private final String moviePath = dataPath + "film.txt";
+	private final String seriesPath = dataPath + "serier.txt";
 
 	
 	@Test
