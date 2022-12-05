@@ -1,8 +1,10 @@
 package domain;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Set;
 
+import data.Data;
 import data.DataAccess;
 
 public class MediaRegistry implements MediaInfo {
@@ -23,9 +25,17 @@ public class MediaRegistry implements MediaInfo {
     }
 
     @Override
-    public void initialize() {
-        // Get data from data-layer
-        ;
+    public void initialize() throws FileNotFoundException {
+        Data data = new Data();
+
+    }
+
+    private void populateMovies(List<String> rawData) {
+        for (String movie : rawData) {
+            // Title, release year, category, rating, cover path
+            String[] properties = movie.split(";");
+            // Iterate movies
+        }
     }
 
     public List<Media> getMovies() {
