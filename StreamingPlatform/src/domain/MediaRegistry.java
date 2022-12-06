@@ -21,6 +21,11 @@ public class MediaRegistry implements MediaInfo {
         movies = new ArrayList<>();
         series = new ArrayList<>();
         initialize();
+
+        if (movies.size() == 0
+            && series.size() == 0) {
+            throw new RuntimeException("Data could not be retrieved!");
+        }
     }
 
     @Override
@@ -42,7 +47,8 @@ public class MediaRegistry implements MediaInfo {
             try {
                 movies.add(createMovie(movieInfo));
             } catch (IOException e) {
-                System.out.println("Image path could not be resolved");
+                //System.out.println("Image path could not be resolved");
+                System.out.println(e.getMessage());
             }
         }
 
@@ -50,7 +56,8 @@ public class MediaRegistry implements MediaInfo {
             try {
                 series.add(createSeries(seriesInfo));
             } catch (IOException e) {
-                System.out.println("Image path could not be resolved");
+                //System.out.println("Image path could not be resolved");
+                System.out.println(e.getMessage());
             }
         }
 
@@ -58,16 +65,16 @@ public class MediaRegistry implements MediaInfo {
     }
 
     private Movie createMovie(String data) throws IOException {
-        // 0: Title, 1: release year, 2: category, 3: rating, 4: cover path
+        // 0: Title, 1: release year, 2: categories, 3: rating, 4: cover path
         String[] properties = data.trim().split(";");
 
         // Iterate movies
         return new Movie(
-                properties[0],
-                properties[1],
-                parseCategories(properties[1]),
-                parseRating(properties[2]),
-                getCoverImage(properties[3]),
+                properties[0].trim(),
+                properties[1].trim(),
+                parseCategories(properties[2]),
+                parseRating(properties[3]),
+                getCoverImage(properties[4]),
                 ""
         );
     }
@@ -88,9 +95,9 @@ public class MediaRegistry implements MediaInfo {
                 properties[0],
                 // TODO update to match Series should have from and to years
                 properties[1],
-                parseCategories(properties[1]),
-                parseRating(properties[2]),
-                getCoverImage(properties[3]),
+                parseCategories(properties[2]),
+                parseRating(properties[3]),
+                getCoverImage(properties[4]),
                 seasons
         );
     }
@@ -115,7 +122,7 @@ public class MediaRegistry implements MediaInfo {
     }
 
     private Set<String> parseCategories(String property) {
-        return Set.of(property.trim().split(","));
+        return Set.of(property.replaceAll(" ", "").split(","));
     }
 
     private BufferedImage getCoverImage(String path) throws IOException {
@@ -123,8 +130,8 @@ public class MediaRegistry implements MediaInfo {
         return ImageIO.read(coverPath);
     }
 
-    private Float parseRating(String property) {
-        return Float.parseFloat(property.replace(",","."));
+    private Double parseRating(String property) {
+        return Double.parseDouble(property.replace(",","."));
     }
 
     public List<Media> getMovies() {
@@ -135,7 +142,7 @@ public class MediaRegistry implements MediaInfo {
         return series;
     }
 
-    public Set<String> parseCategories() {
+    public Set<String> getCategories() {
         return categories;
     }
     

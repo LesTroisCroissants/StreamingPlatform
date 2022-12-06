@@ -55,7 +55,7 @@ public class Data implements DataAccess {
         ArrayList<String> fileLines = loadFile(path);
         for (int i = 0; i < fileLines.size(); i++) {
             String mediaName = fileLines.get(i).split(";")[0];
-            fileLines.set(i, fileLines.get(i) + coverPath + mediaName + ".png;");
+            fileLines.set(i, fileLines.get(i) + coverPath + mediaName + ".jpg;");
         }
         return fileLines;
     }
