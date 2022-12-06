@@ -44,10 +44,10 @@ public class DataTests {
 			int actualSemicolonAmount = movieInfo.get(0).split(";").length;
 			assertEquals(formalSemicolonAmount, actualSemicolonAmount);
 
-			String firstElement = "The Godfather; 1972; Crime, Drama; 9,2;StreamingPlatform/src/Data/filmplakater/The Godfather.png;";
+			String firstElement = "The Godfather; 1972; Crime, Drama; 9,2;StreamingPlatform/src/Data/filmplakater/The Godfather.jpg;";
 			assertEquals(firstElement, movieInfo.get(0));
 
-			String lastElement = "Yankee Doodle Dandy; 1942; Biography, Drama, Musical; 7,7;" + "StreamingPlatform/src/Data/filmplakater/" + "Yankee Doodle Dandy.png;";
+			String lastElement = "Yankee Doodle Dandy; 1942; Biography, Drama, Musical; 7,7;" + "StreamingPlatform/src/Data/filmplakater/" + "Yankee Doodle Dandy.jpg;";
 			assertEquals(lastElement, movieInfo.get(movieInfo.size() - 1));
 
 
@@ -67,10 +67,10 @@ public class DataTests {
 			int actualSemicolonAmount = seriesInfo.get(0).split(";").length;
 			assertEquals(formalSemicolonAmount, actualSemicolonAmount);
 
-			String firstElement = "Twin Peaks; 1990-1991; Crime, Drama, Mystery; 8,8; 1-8, 2-22;StreamingPlatform/src/Data/serieforsider/Twin Peaks.png;";
+			String firstElement = "Twin Peaks; 1990-1991; Crime, Drama, Mystery; 8,8; 1-8, 2-22;StreamingPlatform/src/Data/serieforsider/Twin Peaks.jpg;";
 			assertEquals(firstElement, seriesInfo.get(0));
 
-			String lastElement = "Dexter; 2006-2013; Crime, Drama, Mystery; 8,7; 1-12, 2-12, 3-12, 4-12, 5-12, 6-12, 7-12,8-12;" + "StreamingPlatform/src/Data/serieforsider/" + "Dexter.png;";
+			String lastElement = "Dexter; 2006-2013; Crime, Drama, Mystery; 8,7; 1-12, 2-12, 3-12, 4-12, 5-12, 6-12, 7-12,8-12;" + "StreamingPlatform/src/Data/serieforsider/" + "Dexter.jpg;";
 			assertEquals(lastElement, seriesInfo.get(seriesInfo.size() - 1));
 
 		} catch (Exception e){
