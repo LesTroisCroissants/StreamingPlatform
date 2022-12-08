@@ -1,9 +1,15 @@
 package domain;
 
 import java.util.List;
+import java.util.Set;
 
 public interface MediaInfo {
     List<Media> search(String input);
     List<Media> filter(String category);
-    void initialize();
+    List<Media> sortRating(List<Media> media, boolean ascending);
+    List<Media> sortYear(List<Media> media, boolean ascending);
+    List<Media> getMovies();
+    List<Media> getSeries();
+    Set<String> getCategories();
+    List<Media> getAllMedia();
 }
