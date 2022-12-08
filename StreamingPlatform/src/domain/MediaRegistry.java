@@ -5,10 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import data.Data;
 
@@ -28,84 +26,6 @@ public class MediaRegistry implements MediaInfo {
             && series.size() == 0) {
             throw new RuntimeException("Data could not be retrieved!");
         }
-    }
-
-    /**
-     * Takes a search argument and returns a list of media.
-     * Sorted by most relevant by title to relevant by category.
-     */
-    @Override
-    public List<Media> search(String input) {
-        List<Media> allMedia = getAllMedia();
-        List<Media> results = new ArrayList<>();
-
-        List<Media> resultsTitle = allMedia.stream().filter(x -> x.getTitle().toLowerCase().contains(input.toLowerCase())).toList();
-        List<Media> resultsCategory = allMedia.stream()
-                                        .filter(x -> x.getCategories()
-                                                // Todo fix this?
-                                                .contains(input) && !results.contains(x))
-                                        .toList();
-        results.addAll(resultsTitle);
-        results.addAll(resultsCategory);
-        return results;
-    }
-
-    @Override
-    public List<Media> getAllMedia() {
-        List<Media> allMedia = new ArrayList<>();
-        allMedia.addAll(movies);
-        allMedia.addAll(series);
-        return allMedia;
-    }
-
-    /**
-     * Filter by category
-     */
-    @Override
-    public List<Media> filter(String category) {
-        return getAllMedia().stream().filter(x -> x.getCategories().contains(category)).toList();
-    }
-
-    /**
-     * Sort by year
-     */
-    @Override
-    public List<Media> sortYear(List<Media> media, boolean ascending) {
-        for (int i = 0; i < media.size(); i++) {
-            for (int j = i + 1; j < media.size(); j++) {
-                Media media1 = media.get(i);
-                Media media2 = media.get(j);
-                if (media1.getYear() > media2.getYear() && ascending) {
-                    media.set(i, media2);
-                    media.set(j, media1);
-                } else if (media1.getYear() < media2.getYear() && !ascending) {
-                    media.set(i, media2);
-                    media.set(j, media1);
-                }
-            }
-        }
-        return media;
-    }
-
-    /**
-     * Sort by rating
-     */
-    @Override
-    public List<Media> sortRating(List<Media> media, boolean ascending) {
-        for (int i = 0; i < media.size(); i++) {
-            for (int j = i + 1; j < media.size(); j++) {
-                Media media1 = media.get(i);
-                Media media2 = media.get(j);
-                if (media1.getRating() > media2.getRating() && ascending) {
-                    media.set(i, media2);
-                    media.set(j, media1);
-                } else if (media1.getRating() < media2.getRating() && !ascending) {
-                    media.set(i, media2);
-                    media.set(j, media1);
-                }
-            }
-        }
-        return media;
     }
 
     private void initialize() throws FileNotFoundException {
@@ -165,7 +85,6 @@ public class MediaRegistry implements MediaInfo {
         // Iterate movies
         return new Series(
                 properties[0],
-                // TODO update to match Series should have from and to years
                 yearFrom,
                 yearTo,
                 parseCategories(properties[2]),
@@ -175,8 +94,15 @@ public class MediaRegistry implements MediaInfo {
         );
     }
 
+    private Season generateSeason(String seasonInfo) {
+        int episodes = Integer.parseInt(seasonInfo.split("-")[1]);
+
+        return new Season(
+                generateEpisodes(episodes)
+        );
+    }
+
     private List<Episode> generateEpisodes(int amount) {
-        // TODO add episode numbers and description?
         List<Episode> episodes = new ArrayList<>();
 
         for (int i = 0; i < amount; i++) {
@@ -185,14 +111,6 @@ public class MediaRegistry implements MediaInfo {
 
         return episodes;
     };
-
-    private Season generateSeason(String seasonInfo) {
-        int episodes = Integer.parseInt(seasonInfo.split("-")[1]);
-
-        return new Season(
-                generateEpisodes(episodes)
-        );
-    }
 
     private Set<String> parseCategories(String property) {
         return Set.of(property.replaceAll(" ", "").split(","));
@@ -207,14 +125,96 @@ public class MediaRegistry implements MediaInfo {
         return Double.parseDouble(property.replace(",","."));
     }
 
+    /**
+     * Takes a search argument and returns a list of media.
+     * Sorted by most relevant by title to relevant by category.
+     */
+    @Override
+    public List<Media> search(String input) {
+        List<Media> allMedia = getAllMedia();
+
+        List<Media> resultsTitle = allMedia.stream()
+                .filter(x -> x.getTitle()
+                        .toLowerCase()
+                        .contains(input.toLowerCase()))
+                .toList();
+
+        List<Media> results = new ArrayList<>(resultsTitle);
+
+        List<Media> resultsCategory = allMedia.stream()
+                .filter(x -> x.getCategories()
+                        .contains(input) && !results.contains(x))
+                .toList();
+        results.addAll(resultsCategory);
+
+        return results;
+    }
+
+    @Override
+    public List<Media> getAllMedia() {
+        List<Media> allMedia = new ArrayList<>();
+        allMedia.addAll(movies);
+        allMedia.addAll(series);
+        return allMedia;
+    }
+
+    /**
+     * Filter by category
+     */
+    @Override
+    public List<Media> filter(String category) {
+        return getAllMedia().stream().filter(x -> x.getCategories().contains(category)).toList();
+    }
+
+    /**
+     * Sort by year
+     */
+    @Override
+    public List<Media> sortYear(List<Media> media, boolean ascending) {
+        for (int i = 0; i < media.size(); i++) {
+            for (int j = i + 1; j < media.size(); j++) {
+                Media media1 = media.get(i);
+                Media media2 = media.get(j);
+                if (media1.getYear() > media2.getYear() && ascending
+                        || media1.getYear() < media2.getYear() && !ascending) {
+                    media.set(i, media2);
+                    media.set(j, media1);
+                }
+            }
+        }
+        return media;
+    }
+
+    /**
+     * Sort by rating
+     */
+    @Override
+    public List<Media> sortRating(List<Media> media, boolean ascending) {
+        for (int i = 0; i < media.size(); i++) {
+            for (int j = i + 1; j < media.size(); j++) {
+                Media media1 = media.get(i);
+                Media media2 = media.get(j);
+                if (media1.getRating() > media2.getRating() && ascending
+                        || media1.getRating() < media2.getRating() && !ascending) {
+                    media.set(i, media2);
+                    media.set(j, media1);
+                }
+            }
+        }
+        return media;
+    }
+
+    @Override
     public List<Media> getMovies() {
         return movies;
     }
 
+    @Override
     public List<Media> getSeries() {
         return series;
     }
 
+    @Override
     public Set<String> getCategories() {
         return categories;
     }
