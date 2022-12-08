@@ -42,6 +42,7 @@ public class MediaRegistry implements MediaInfo {
         List<Media> resultsTitle = allMedia.stream().filter(x -> x.getTitle().toLowerCase().contains(input.toLowerCase())).toList();
         List<Media> resultsCategory = allMedia.stream()
                                         .filter(x -> x.getCategories()
+                                                // Todo fix this?
                                                 .contains(input) && !results.contains(x))
                                         .toList();
         results.addAll(resultsTitle);
@@ -61,8 +62,7 @@ public class MediaRegistry implements MediaInfo {
      */
     @Override
     public List<Media> filter(String category) {
-        // Implement filter function
-        return null;
+        return getAllMedia().stream().filter(x -> x.getCategories().contains(category)).toList();
     }
 
     /**
