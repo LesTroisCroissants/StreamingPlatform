@@ -50,6 +50,7 @@ public class MediaRegistry implements MediaInfo {
         return results;
     }
 
+    @Override
     public List<Media> getAllMedia() {
         List<Media> allMedia = new ArrayList<>();
         allMedia.addAll(movies);
