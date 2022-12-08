@@ -7,14 +7,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import data.Data;
 
 import javax.imageio.ImageIO;
 
 public class MediaRegistry implements MediaInfo {
-    private List<Media> movies;
-    private List<Media> series;
+    private List<Movie> movies;
+    private List<Series> series;
     private Set<String> categories;
 
     public MediaRegistry() throws FileNotFoundException {
@@ -28,14 +29,54 @@ public class MediaRegistry implements MediaInfo {
         }
     }
 
+    /**
+     * Takes a search argument and returns a list of media.
+     * Sorted by most relevant by title to relevant by category.
+     */
     @Override
     public List<Media> search(String input) {
-        // Implement search function
+        List<Media> allMedia = getAllMedia();
+
+        List<Media> results = allMedia.stream().filter(x -> x.getTitle().contains(input)).toList();
+        results.addAll(allMedia.stream()
+                .filter(x -> x.getCategories()
+                        .contains(input) && !results.contains(x))
+                .toList());
+
+        return results;
+    }
+
+    public List<Media> getAllMedia() {
+        List<Media> allMedia = new ArrayList<>();
+        allMedia.addAll(movies);
+        allMedia.addAll(series);
+        return allMedia;
+    }
+
+    /**
+     * Filter by category
+     */
+    @Override
+    public List<Media> filter(String category) {
+        // Implement filter function
         return null;
     }
 
+    /**
+     * Filter by rating
+     */
     @Override
-    public List<Media> filter(String category, int yearFrom, int yearTo, int rating) {
+    public List<Media> filter(double rating) {
+        // Implement filter function
+        return null;
+    }
+
+    /**
+     * Filter by year
+     * Use 0 for either yearFrom or yearTo to ignore
+     */
+    @Override
+    public List<Media> filter(int yearFrom, int yearTo) {
         // Implement filter function
         return null;
     }
@@ -134,11 +175,11 @@ public class MediaRegistry implements MediaInfo {
         return Double.parseDouble(property.replace(",","."));
     }
 
-    public List<Media> getMovies() {
+    public List<Movie> getMovies() {
         return movies;
     }
 
-    public List<Media> getSeries() {
+    public List<Series> getSeries() {
         return series;
     }
 
