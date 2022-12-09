@@ -79,9 +79,9 @@ public class MediaRegistry implements MediaInfo {
             seasons.add(generateSeason(season));
         }
 
-        String[] years = properties[1].split("-");
+        String[] years = properties[1].trim().split("-");
         int yearFrom = Integer.parseInt(years[0]);
-        int yearTo = years.length > 1 ? Integer.parseInt(properties[1]) : 0;
+        int yearTo = years.length > 1 ? Integer.parseInt(years[1]) : 0;
 
         // Iterate movies
         return new Series(
@@ -90,7 +90,7 @@ public class MediaRegistry implements MediaInfo {
                 yearTo,
                 parseCategories(properties[2]),
                 parseRating(properties[3]),
-                getCoverImage(properties[4]),
+                getCoverImage(properties[5]),
                 seasons,
                 false // TODO check if movie is favorited
         );
