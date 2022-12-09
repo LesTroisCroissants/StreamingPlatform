@@ -126,21 +126,27 @@ public class MainFrame extends JFrame {
             constraints.weightx = 1.0;
             constraints.ipadx = 15;
             constraints.ipady = 15;
-            constraints.anchor = GridBagConstraints.FIRST_LINE_START;
+            constraints.anchor = GridBagConstraints.CENTER;
+            constraints.fill = GridBagConstraints.BOTH;
 
             JScrollPane panel = new JScrollPane(content);
-            content.setBackground(Color.darkGray);
             panel.getVerticalScrollBar().setUnitIncrement(10);
+            panel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+            content.setBackground(Color.darkGray);
+            content.getWidth();
 
             int counter = 0;
             for (Media m : media) {
                 constraints.gridy = counter / 8;
+
                 content.add(new JLabel(new ImageIcon(m.getCoverImage())), constraints);
                 counter++;
             }
 
              // TODO find prettier way to add empty space in the grid
-            int empty = 8 - (counter + 1 % 8);
+            int empty = 8 - (counter + 1 % 8) + 1;
+            constraints.weightx = 3.0;
             for (int i = 0; i < empty; i++) {
                 content.add(new JLabel(""), constraints);
             }
@@ -151,7 +157,7 @@ public class MainFrame extends JFrame {
         static void search (DocumentEvent e) {
             String searchText = null;
             try {
-                searchText = e.getDocument().getText(0, e.getDocument().getLength());
+                searchText = e.getDocument().getText(0, e.getDocument().getLength()).trim();
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
