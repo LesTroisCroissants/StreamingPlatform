@@ -64,7 +64,8 @@ public class MediaRegistry implements MediaInfo {
                 parseCategories(properties[2]),
                 parseRating(properties[3]),
                 getCoverImage(properties[4]),
-                ""
+                "",
+                false // TODO check if movie is favorited
         );
     }
 
@@ -91,7 +92,8 @@ public class MediaRegistry implements MediaInfo {
                 parseCategories(properties[2]),
                 parseRating(properties[3]),
                 getCoverImage(properties[4]),
-                seasons
+                seasons,
+                false // TODO check if movie is favorited
         );
     }
 
