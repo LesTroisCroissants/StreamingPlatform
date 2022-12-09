@@ -11,16 +11,24 @@ import java.util.Set;
 
 public class Series extends Media{
 
+    private final int endYear;
     private final List<Season> seasons;
 
+    public Series(String title, int startYear, int endYear, Set<String> categories, double rating, Image coverImage, List<Season> seasons, boolean favorite){
+        super(title, startYear, categories, rating, coverImage, favorite);
 
-    public Series(String title, String year, Set<String> categories, double rating, Image coverImage, List<Season> seasons){
-        super(title, year, categories, rating, coverImage);
-
+        this.endYear = endYear;
         this.seasons = seasons;
+    }
+
+
+
+    public int getEndYear() {
+        return endYear;
     }
 
     public List<Season> getSeasons() {
         return seasons;
     }
+
 }

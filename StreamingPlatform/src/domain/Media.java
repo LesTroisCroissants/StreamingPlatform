@@ -6,18 +6,20 @@ import java.util.Set;
 public abstract class Media {
 
     private final String title;
-    private final String year;
+    private final int year;
     private final Set<String> categories;
     private final double rating;
     private final Image coverImage;
+    private boolean favorite;
 
 
-    public Media(String title, String year, Set<String> categories, double rating, Image coverImage){
+    public Media(String title, int year, Set<String> categories, double rating, Image coverImage, boolean favorite){
         this.title = title;
         this.year = year;
         this.categories = categories;
         this.rating = rating;
         this.coverImage = coverImage;
+        this.favorite = favorite;
     }
 
 
@@ -26,7 +28,7 @@ public abstract class Media {
         return title;
     }
 
-    public String getYear(){
+    public int getYear(){
         return year;
     }
 
@@ -40,6 +42,14 @@ public abstract class Media {
 
     public Image getCoverImage(){
         return coverImage;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 
 }
