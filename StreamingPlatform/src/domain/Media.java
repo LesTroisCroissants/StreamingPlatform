@@ -10,14 +10,16 @@ public abstract class Media {
     private final Set<String> categories;
     private final double rating;
     private final Image coverImage;
+    private boolean favorite;
 
 
-    public Media(String title, int year, Set<String> categories, double rating, Image coverImage){
+    public Media(String title, int year, Set<String> categories, double rating, Image coverImage, boolean favorite){
         this.title = title;
         this.year = year;
         this.categories = categories;
         this.rating = rating;
         this.coverImage = coverImage;
+        this.favorite = favorite;
     }
 
 
@@ -40,6 +42,14 @@ public abstract class Media {
 
     public Image getCoverImage(){
         return coverImage;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 
 }
