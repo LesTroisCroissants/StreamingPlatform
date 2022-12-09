@@ -13,6 +13,7 @@ import data.Data;
 import javax.imageio.ImageIO;
 
 public class MediaRegistry implements MediaInfo {
+    private Data data;
     private List<Media> movies;
     private List<Media> series;
     private Set<String> categories;
@@ -29,7 +30,7 @@ public class MediaRegistry implements MediaInfo {
     }
 
     private void initialize() throws FileNotFoundException {
-        Data data = new Data();
+        data = new Data();
 
         for (String movieInfo : data.getMovieInfo()) {
             try {
@@ -202,6 +203,23 @@ public class MediaRegistry implements MediaInfo {
             }
         }
         return media;
+    }
+
+    @Override
+    public void saveFavorites(){
+        List<String> favorites = new ArrayList<>();
+        for (Media m : getFavorites())
+            favorites.add(m.getTitle());
+        data.saveFavorites(favorites);
+    }
+
+    @Override
+    public List<Media> getFavorites(){
+        List<Media> favorites = new ArrayList<>();
+        for (Media m : getAllMedia())
+            if (m.isFavorite())
+                favorites.add(m);
+        return favorites;
     }
 
     @Override
