@@ -14,8 +14,8 @@ public class Series extends Media{
     private final int endYear;
     private final List<Season> seasons;
 
-    public Series(String title, int startYear, int endYear, Set<String> categories, double rating, Image coverImage, List<Season> seasons){
-        super(title, startYear, categories, rating, coverImage);
+    public Series(String title, int startYear, int endYear, Set<String> categories, double rating, Image coverImage, List<Season> seasons, boolean favorite){
+        super(title, startYear, categories, rating, coverImage, favorite);
 
         this.endYear = endYear;
         this.seasons = seasons;
