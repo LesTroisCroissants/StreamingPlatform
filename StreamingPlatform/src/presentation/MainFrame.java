@@ -18,7 +18,7 @@ public class MainFrame extends JFrame {
         static JFrame frame;
         static MediaRegistry mediaRegistry;
         static List<Media> media;
-        static JPanel mainPanel;
+        static JScrollPane mainPanel;
 
         static JTextField searchBar;
         static String lastSearch;
@@ -27,6 +27,7 @@ public class MainFrame extends JFrame {
         public static void init(){
             try {
                 mediaRegistry = new MediaRegistry();
+                media = mediaRegistry.getAllMedia();
             } catch (FileNotFoundException e){ // TODO handle this with a popup
                 System.out.println("Hej, you error! :)");
             }
@@ -38,9 +39,9 @@ public class MainFrame extends JFrame {
             init();
 
             frame.setJMenuBar(createMenuBar());
-            
-            frame.add(createMainPanel());
 
+            mainPanel = createMainPanel();
+            frame.add(mainPanel);
 
             // Frame settings
             frame.setSize(1280, 720);
@@ -55,7 +56,6 @@ public class MainFrame extends JFrame {
             JPanel bottomPanel = createBottomPanel();
 
             menuBar.setLayout(new BoxLayout(menuBar, BoxLayout.Y_AXIS));
-
 
             createTopPanel();
             createBottomPanel();
@@ -85,8 +85,8 @@ public class MainFrame extends JFrame {
             searchBar.setPreferredSize(new Dimension(120, 20));
             panel.add(searchBar, BorderLayout.LINE_END);
             searchBar.getDocument().addDocumentListener(new DocumentListener() {
-                public void insertUpdate(DocumentEvent e) { search(); }
-                public void removeUpdate(DocumentEvent e) { search(); }
+                public void insertUpdate(DocumentEvent e) { search(e); }
+                public void removeUpdate(DocumentEvent e) { search(e); }
                 public void changedUpdate(DocumentEvent e) {}
             });
 
@@ -116,19 +116,53 @@ public class MainFrame extends JFrame {
             return panel;
         }
 
-        public static JPanel createMainPanel(){
-            JPanel panel = new JPanel();
-
+        public static JScrollPane createMainPanel(){
             // TODO Load media into this view
 
-            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // TODO layout needs changing
-            panel.setBackground(Color.darkGray);
+            JPanel content = new JPanel();
+            content.setLayout(new GridBagLayout());
+            GridBagConstraints constraints = new GridBagConstraints();
+            constraints.weighty = 1.0;
+            constraints.weightx = 1.0;
+            constraints.ipadx = 15;
+            constraints.ipady = 15;
+            constraints.anchor = GridBagConstraints.FIRST_LINE_START;
+
+            JScrollPane panel = new JScrollPane(content);
+            content.setBackground(Color.darkGray);
+            panel.getVerticalScrollBar().setUnitIncrement(10);
+
+            int counter = 0;
+            for (Media m : media) {
+                constraints.gridy = counter / 8;
+                content.add(new JLabel(new ImageIcon(m.getCoverImage())), constraints);
+                counter++;
+            }
+
+             // TODO find prettier way to add empty space in the grid
+            int empty = 8 - (counter + 1 % 8);
+            for (int i = 0; i < empty; i++) {
+                content.add(new JLabel(""), constraints);
+            }
 
             return panel;
         }
 
-        static void search () {
-            media = mediaRegistry.search(searchBar.getText().trim());
-            System.out.println("Works!");
+        static void search (DocumentEvent e) {
+            String searchText = null;
+            try {
+                searchText = e.getDocument().getText(0, e.getDocument().getLength());
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+            media = mediaRegistry.search(searchText);
+            updateContent();
+        }
+
+        static void updateContent() {
+            frame.remove(mainPanel);
+            mainPanel = createMainPanel();
+            frame.add(mainPanel);
+            frame.revalidate();
         }
     }

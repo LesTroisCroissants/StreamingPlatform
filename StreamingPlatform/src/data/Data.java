@@ -41,7 +41,7 @@ public class Data implements DataAccess {
         ArrayList<String> array = new ArrayList<>();
 
         File file = new File(filePath);
-        Scanner myReader = new Scanner(file, "utf-8");
+        Scanner myReader = new Scanner(file, "windows-1252");
         while (myReader.hasNextLine()) {
             String data = myReader.nextLine();
             array.add(data.strip());
