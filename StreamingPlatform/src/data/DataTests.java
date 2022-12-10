@@ -17,7 +17,7 @@ public class DataTests {
 
 	
 	@Test
-	public void TestCategorySet(){
+	public void testCategorySet(){
 		String[] movieCategories = new String[] {"Crime", "Drama", "Biography", "Sport", "History", "Romance", "War", "Mystery", "Adventure", "Family", "Fantasy", "Thriller", "Horror", "Film-Noir", "Action", "Sci-fi", "Comedy" , "Musical", "Western", "Music"};
 		String[] seriesCategories = new String[] {"Talk-show", "Documentary", "Crime", "Drama", "Action", "Adventure", "Drama", "Comedy", "Fantasy", "Animation", "Horror", "Sci-fi", "War", "Thriller", "Mystery", "Biography", "History", "Family", "Western", "Romance", "Sport"};
 
@@ -30,7 +30,7 @@ public class DataTests {
 	}
 
 	@Test
-	public void TestGetMovieInfo(){
+	public void testGetMovieInfo(){
 		List<String> movieInfo = data.getMovieInfo();
 
 		int formalSemicolonAmount = 5;
@@ -45,7 +45,7 @@ public class DataTests {
 	}
 
 	@Test
-	public void TestGetSeriesInfo(){
+	public void testGetSeriesInfo(){
 		List<String> seriesInfo = data.getSeriesInfo();
 
 		int formalSemicolonAmount = 6;
@@ -60,7 +60,7 @@ public class DataTests {
 	}
 
 	@Test
-	public void TestSavingAndReadingFavorites(){
+	public void testSavingAndReadingFavorites(){
 		try {
 			List<String> favoritesSave = new ArrayList<>(List.of("Totoro", "Nausicäa", "Princess Mononoke", "Spirited Away"));
 
@@ -75,7 +75,7 @@ public class DataTests {
 	}
 
 	@Before
-	public void Setup(){
+	public void setup(){
 		try {
 			data = new Data();
 		} catch (Exception e){
@@ -85,7 +85,7 @@ public class DataTests {
 
 	@After
 	public void tearDown(){
-
+		data = null;
 	}
 }
 

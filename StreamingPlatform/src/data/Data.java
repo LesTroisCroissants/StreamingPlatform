@@ -1,8 +1,7 @@
 package data;
 
-import java.io.File; // Import the File class
-import java.io.FileNotFoundException; // Import this class to handle errors
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 public class Data implements DataAccess {
@@ -100,7 +99,7 @@ public class Data implements DataAccess {
             while (sc.hasNextLine()){
                 favorites.add(sc.nextLine());
             }
-
+            sc.close();
             return favorites;
 
         } catch (FileNotFoundException e) {
