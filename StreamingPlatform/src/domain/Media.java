@@ -13,13 +13,13 @@ public abstract class Media {
     private boolean favorite;
 
 
-    public Media(String title, int year, Set<String> categories, double rating, Image coverImage, boolean favorite){
+    public Media(String title, int year, Set<String> categories, double rating, Image coverImage){
         this.title = title;
         this.year = year;
         this.categories = categories;
         this.rating = rating;
         this.coverImage = coverImage;
-        this.favorite = favorite;
+        this.favorite = false;
     }
 
 

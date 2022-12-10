@@ -1,9 +1,10 @@
 package domain;
-import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class MediaRegistryTests {
 
@@ -17,6 +18,7 @@ public class MediaRegistryTests {
         mediaRegistry.setFavorite(mediaRegistry.getAllMedia().get(0), false);
 
         assertEquals(mediaRegistry.getAllMedia().get(1), mediaRegistry.getFavorites().get(0));
+        assertFalse(mediaRegistry.getFavorites().contains(mediaRegistry.getAllMedia().get(0)));
     }
 
     @Before

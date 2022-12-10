@@ -66,8 +66,7 @@ public class MediaRegistry implements MediaInfo {
                 parseCategories(properties[2]),
                 parseRating(properties[3]),
                 getCoverImage(properties[4]),
-                "",
-                false
+                ""
         );
     }
 
@@ -94,8 +93,7 @@ public class MediaRegistry implements MediaInfo {
                 parseCategories(properties[2]),
                 parseRating(properties[3]),
                 getCoverImage(properties[5]),
-                seasons,
-                false
+                seasons
         );
     }
 
