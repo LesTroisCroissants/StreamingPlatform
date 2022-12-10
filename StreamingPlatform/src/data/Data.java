@@ -1,7 +1,7 @@
 package data;
 
-import java.io.File; // Import the File class
-import java.io.FileNotFoundException; // Import this class to handle errors
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 public class Data implements DataAccess {
@@ -10,6 +10,7 @@ public class Data implements DataAccess {
     private final String movieCoverImgPath = dataPath + "filmplakater/";
     private final String seriesPath = dataPath + "serier.txt";
     private final String seriesCoverImgPath = dataPath + "serieforsider/";
+    private final String favoritesPath = dataPath + "favorites.txt";
 
 
     private HashSet<String> categories = new HashSet<>();
@@ -41,7 +42,7 @@ public class Data implements DataAccess {
         ArrayList<String> array = new ArrayList<>();
 
         File file = new File(filePath);
-        Scanner myReader = new Scanner(file);
+        Scanner myReader = new Scanner(file, "windows-1252");
         while (myReader.hasNextLine()) {
             String data = myReader.nextLine();
             array.add(data.strip());
@@ -82,6 +83,47 @@ public class Data implements DataAccess {
     @Override
     public List<String> getSeriesInfo() {
         return seriesInfo;
+    }
+
+
+    /**
+     * Reads favorites.txt and converts its contents to an ArrayList<String>
+     */
+    @Override
+    public List<String> getFavorites() {
+        try {
+
+            Scanner sc = new Scanner(new File(favoritesPath));
+            List<String> favorites = new ArrayList<>();
+
+            while (sc.hasNextLine()){
+                favorites.add(sc.nextLine());
+            }
+            sc.close();
+            return favorites;
+
+        } catch (FileNotFoundException e) {
+            System.out.println("No favorites found!");
+            return new ArrayList<String>();
+        }
+    }
+
+    /**
+     * Saves favorites in a .txt-file
+     */
+    @Override
+    public void saveFavorites(List<String> favorites){
+        try {
+
+            PrintWriter pw = new PrintWriter(new File(favoritesPath));
+
+            for (String s : favorites)
+                pw.println(s);
+            pw.close();
+
+        } catch (FileNotFoundException e){
+            System.out.println(e.getMessage());
+        }
     }
 
 }
