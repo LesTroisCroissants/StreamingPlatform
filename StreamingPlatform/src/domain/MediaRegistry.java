@@ -132,10 +132,8 @@ public class MediaRegistry implements MediaInfo {
      * Sorted by most relevant by title to relevant by category.
      */
     @Override
-    public List<Media> search(String input) {
-        List<Media> allMedia = getAllMedia();
-
-        List<Media> resultsTitle = allMedia.stream()
+    public List<Media> search(String input, List<Media> media) {
+        List<Media> resultsTitle = media.stream()
                 .filter(x -> x.getTitle()
                         .toLowerCase()
                         .contains(input.toLowerCase()))
@@ -143,7 +141,7 @@ public class MediaRegistry implements MediaInfo {
 
         List<Media> results = new ArrayList<>(resultsTitle);
 
-        List<Media> resultsCategory = allMedia.stream()
+        List<Media> resultsCategory = media.stream()
                 .filter(x -> x.getCategories()
                         .contains(input) && !results.contains(x))
                 .toList();
