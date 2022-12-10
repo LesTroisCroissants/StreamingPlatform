@@ -114,8 +114,12 @@ public class MediaRegistry implements MediaInfo {
         return episodes;
     };
 
-    private Set<String> parseCategories(String property) {
-        return Set.of(property.replaceAll(" ", "").split(","));
+    private Set<String> parseCategories(String rawCategories) {
+        return Set.of(rawCategories
+                .toLowerCase()
+                .replaceAll(" ", "")
+                .split(",")
+        );
     }
 
     private BufferedImage getCoverImage(String path) throws IOException {
@@ -123,8 +127,8 @@ public class MediaRegistry implements MediaInfo {
         return ImageIO.read(coverPath);
     }
 
-    private Double parseRating(String property) {
-        return Double.parseDouble(property.replace(",","."));
+    private Double parseRating(String rawRating) {
+        return Double.parseDouble(rawRating.replace(",","."));
     }
 
     /**
