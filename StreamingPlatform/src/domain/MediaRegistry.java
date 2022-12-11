@@ -137,6 +137,7 @@ public class MediaRegistry implements MediaInfo {
      */
     @Override
     public List<Media> search(String input, List<Media> media) {
+        if (input.length() == 0) return media;
         List<Media> resultsTitle = media.stream()
                 .filter(x -> x.getTitle()
                         .toLowerCase()
@@ -147,7 +148,8 @@ public class MediaRegistry implements MediaInfo {
 
         List<Media> resultsCategory = media.stream()
                 .filter(x -> x.getCategories()
-                        .contains(input) && !results.contains(x))
+                        .contains(input.trim().toLowerCase())
+                            && !results.contains(x))
                 .toList();
         results.addAll(resultsCategory);
 
