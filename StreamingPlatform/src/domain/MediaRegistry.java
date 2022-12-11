@@ -13,6 +13,7 @@ import data.Data;
 import javax.imageio.ImageIO;
 
 public class MediaRegistry implements MediaInfo {
+    private Data data;
     private List<Media> movies;
     private List<Media> series;
     private Set<String> categories;
@@ -29,14 +30,14 @@ public class MediaRegistry implements MediaInfo {
     }
 
     private void initialize() throws FileNotFoundException {
-        Data data = new Data();
+        data = new Data();
 
         for (String movieInfo : data.getMovieInfo()) {
             try {
                 movies.add(createMovie(movieInfo));
             } catch (IOException e) {
-                //System.out.println("Image path could not be resolved");
-                System.out.println(e.getMessage());
+                System.out.println("Image path could not be resolved for movie");
+                //System.out.println(e.getMessage());
             }
         }
 
@@ -44,11 +45,13 @@ public class MediaRegistry implements MediaInfo {
             try {
                 series.add(createSeries(seriesInfo));
             } catch (IOException e) {
-                //System.out.println("Image path could not be resolved");
-                System.out.println(e.getMessage());
+                System.out.println("Image path could not be resolved for series");
+                System.out.println(seriesInfo);
+                //System.out.println(e.getMessage());
             }
         }
 
+        loadFavorites();
         categories = data.getCategories();
     }
 
@@ -63,8 +66,7 @@ public class MediaRegistry implements MediaInfo {
                 parseCategories(properties[2]),
                 parseRating(properties[3]),
                 getCoverImage(properties[4]),
-                "",
-                false // TODO check if movie is favorited
+                ""
         );
     }
 
@@ -91,8 +93,7 @@ public class MediaRegistry implements MediaInfo {
                 parseCategories(properties[2]),
                 parseRating(properties[3]),
                 getCoverImage(properties[5]),
-                seasons,
-                false // TODO check if movie is favorited
+                seasons
         );
     }
 
@@ -129,6 +130,16 @@ public class MediaRegistry implements MediaInfo {
 
     private Double parseRating(String rawRating) {
         return Double.parseDouble(rawRating.replace(",","."));
+    }
+
+    /**
+     * Marks all media registered as a favorite in the data as a favorite in the object
+     */
+    private void loadFavorites(){
+        List<String> favorites = data.getFavorites();
+        for (Media m : getAllMedia())
+            if (favorites.contains(m.getTitle()))
+                m.setFavorite(true);
     }
 
     /**
@@ -208,6 +219,37 @@ public class MediaRegistry implements MediaInfo {
             }
         }
         return media;
+    }
+
+    /**
+     * Marks a given media as favorite
+     */
+    @Override
+    public void setFavorite(Media media, boolean shouldBeFavorite) {
+        media.setFavorite(shouldBeFavorite);
+    }
+
+    /**
+     * Sends the list of favorites to the data layer for saving
+     */
+    @Override
+    public void saveFavorites(){
+        List<String> favorites = new ArrayList<>();
+        for (Media m : getFavorites())
+            favorites.add(m.getTitle());
+        data.saveFavorites(favorites);
+    }
+
+    /**
+     * Returns all favorites
+     */
+    @Override
+    public List<Media> getFavorites(){
+        List<Media> favorites = new ArrayList<>();
+        for (Media m : getAllMedia())
+            if (m.isFavorite())
+                favorites.add(m);
+        return favorites;
     }
 
     @Override

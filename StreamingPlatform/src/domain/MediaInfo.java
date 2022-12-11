@@ -12,4 +12,7 @@ public interface MediaInfo {
     List<Media> getSeries();
     Set<String> getCategories();
     List<Media> getAllMedia();
+    void setFavorite(Media media, boolean shouldBeFavorite);
+    void saveFavorites();
+    List<Media> getFavorites();
 }
