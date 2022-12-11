@@ -10,6 +10,63 @@ public class MediaRegistryTests {
 
     private MediaRegistry mediaRegistry;
 
+    @Test
+    public void testSortByRating(){
+        boolean mistakeObserved = false;
+
+        double previousRating = 0;
+        for (Media m : mediaRegistry.sortRating(mediaRegistry.getAllMedia(), true)){
+            if (m.getRating() < previousRating)
+                mistakeObserved = true;
+            previousRating = m.getRating();
+        }
+
+        assertFalse(mistakeObserved);
+
+        mistakeObserved = false;
+
+        previousRating = Integer.MAX_VALUE;
+        for (Media m : mediaRegistry.sortRating(mediaRegistry.getAllMedia(), false)){
+            if (m.getRating() > previousRating)
+                mistakeObserved = true;
+            previousRating = m.getRating();
+        }
+
+        assertFalse(mistakeObserved);
+    }
+
+    @Test
+    public void testSortByYear(){
+        boolean mistakeObserved = false;
+
+        int previousYear = 0;
+        for (Media m : mediaRegistry.sortYear(mediaRegistry.getAllMedia(), true)){
+            if (m.getYear() < previousYear)
+                mistakeObserved = true;
+            previousYear = m.getYear();
+        }
+
+        assertFalse(mistakeObserved);
+
+        mistakeObserved = false;
+
+        previousYear = Integer.MAX_VALUE;
+        for (Media m : mediaRegistry.sortYear(mediaRegistry.getAllMedia(), false)){
+            if (m.getYear() > previousYear)
+                mistakeObserved = true;
+            previousYear = m.getYear();
+        }
+
+        assertFalse(mistakeObserved);
+    }
+
+    @Test
+    public void testSearch(){
+        assertEquals(mediaRegistry.search(""), mediaRegistry.getAllMedia()); //tests empty search
+        assertEquals(mediaRegistry.search("GiRLS"), mediaRegistry.search("girLs")); //tests case sensitivity
+        assertTrue(mediaRegistry.search("Action").containsAll(mediaRegistry.filter("Action"))); //tests category search
+        assertEquals(mediaRegistry.search("crime"), mediaRegistry.filter("Crime")); // tests case sensitivity in category search
+    }
 
     @Test
     public void testFavoriteAddingAndChecking(){
