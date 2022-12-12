@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import data.DataAccess;
 import data.Data;
 
 import javax.imageio.ImageIO;
 
 public class MediaRegistry implements MediaInfo {
-    private Data data;
+    private DataAccess data;
     private List<Media> movies;
     private List<Media> series;
     private Set<String> categories;
