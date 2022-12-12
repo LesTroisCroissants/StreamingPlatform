@@ -5,13 +5,11 @@ import domain.Media;
 import domain.MediaRegistry;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.io.FileNotFoundException;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class MainFrame extends JFrame {
@@ -177,7 +175,6 @@ public class MainFrame extends JFrame {
             panel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
             content.setBackground(Color.darkGray);
-            content.getWidth();
 
             int counter = 0;
             for (Media m : media) {
