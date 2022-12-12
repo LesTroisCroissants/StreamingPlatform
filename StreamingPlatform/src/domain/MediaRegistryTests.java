@@ -12,6 +12,7 @@ public class MediaRegistryTests {
 
     @Test
     public void testSortByRating(){
+        //Tests ascending
         boolean mistakeObserved = false;
 
         double previousRating = 0;
@@ -23,6 +24,7 @@ public class MediaRegistryTests {
 
         assertFalse(mistakeObserved);
 
+        //Tests descending
         mistakeObserved = false;
 
         previousRating = Integer.MAX_VALUE;
@@ -37,6 +39,7 @@ public class MediaRegistryTests {
 
     @Test
     public void testSortByYear(){
+        //Tests ascending
         boolean mistakeObserved = false;
 
         int previousYear = 0;
@@ -48,6 +51,7 @@ public class MediaRegistryTests {
 
         assertFalse(mistakeObserved);
 
+        //Tests descending
         mistakeObserved = false;
 
         previousYear = Integer.MAX_VALUE;
@@ -65,7 +69,7 @@ public class MediaRegistryTests {
         assertEquals(mediaRegistry.search(""), mediaRegistry.getAllMedia()); //tests empty search
         assertEquals(mediaRegistry.search("GiRLS"), mediaRegistry.search("girLs")); //tests case sensitivity
         assertTrue(mediaRegistry.search("Action").containsAll(mediaRegistry.filter("Action"))); //tests category search
-        assertEquals(mediaRegistry.search("crime"), mediaRegistry.filter("Crime")); // tests case sensitivity in category search
+        assertTrue(mediaRegistry.search("crImE").containsAll(mediaRegistry.filter("Crime"))); // tests case sensitivity in category search
     }
 
     @Test
