@@ -2,21 +2,30 @@ package presentation;
 
 // Importing required classes
 import domain.Media;
+import domain.MediaInfo;
 import domain.MediaRegistry;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainFrame extends JFrame {
         static JFrame frame;
-        static MediaRegistry mediaRegistry;
-        static List<Media> media;
-        static List<Media> selectedMedia;
+        static MediaInfo mediaRegistry;
+        static List<Media> selectedMedia; // Movies & Series || Movies || Series
+        static List<Media> categorizedMedia;
+        static List<Media> displayedMedia; // Shown on screen
+        static String selectedCategory = "All categories";
 
         // Panels
         static JMenuBar menuBar;
@@ -37,13 +46,18 @@ public class MainFrame extends JFrame {
         static boolean order;
 
 
+        static Color backgroundColor = new Color(28,28,28);
+
+
         public static void init(){
             sortByRating = false;
             sortByYear = false;
+            order = false;
             try {
                 mediaRegistry = new MediaRegistry();
-                setMedia(mediaRegistry.getAllMedia());
-                setSelectedMedia(media);
+                setDisplayedMedia(mediaRegistry.getAllMedia());
+                setSelectedMedia(mediaRegistry.getAllMedia());
+                categorizedMedia = mediaRegistry.getAllMedia();
             } catch (FileNotFoundException e){ // TODO handle this with a popup
                 System.out.println("Hej, you error! :)");
             }
@@ -86,22 +100,37 @@ public class MainFrame extends JFrame {
             panel.setLayout(new BorderLayout());
             panel.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
 
-            // TODO should be replaced with logo
-            JLabel nameLabel = new JLabel("Pastryeam");
-            panel.add(nameLabel, BorderLayout.LINE_START);
+
+            try {
+                BufferedImage logoImage = ImageIO.read(new File("StreamingPlatform/src/data/Data/pastryeam_logo.png"));
+                JLabel logoLabel = new JLabel(new ImageIcon(logoImage.getScaledInstance(329,56, Image.SCALE_SMOOTH)));
+                panel.add(logoLabel, BorderLayout.LINE_START);
+            } catch (IOException e){
+                System.out.println("Could not load logo!");
+            }
+
+            JPanel searchPanel = new JPanel(new BorderLayout());
 
             // search bar
             searchBar = new JTextField();
-            searchBar.setPreferredSize(new Dimension(120, 20));
-            panel.add(searchBar, BorderLayout.LINE_END);
+            searchBar.setBorder(new EmptyBorder(0,12,0,12));
+            searchBar.setPreferredSize(new Dimension(300, 35));
+            searchBar.setFont(new Font("Sans-Serif", Font.PLAIN,16));
+            searchPanel.add(searchBar, BorderLayout.CENTER);
+            searchPanel.setBorder(new EmptyBorder(14,0,14,0));
+            searchPanel.setBackground(backgroundColor);
+
             searchBar.getDocument().addDocumentListener(new DocumentListener() {
                 public void insertUpdate(DocumentEvent e) { search(); }
                 public void removeUpdate(DocumentEvent e) { search(); }
                 public void changedUpdate(DocumentEvent e) {}
             });
 
+            panel.add(searchPanel, BorderLayout.LINE_END);
+
+            panel.setBackground(backgroundColor);
             // Debugging color
-            panel.setBackground(Color.cyan);
+            // panel.setBackground(Color.cyan);
 
             return panel;
         }
@@ -109,58 +138,98 @@ public class MainFrame extends JFrame {
         public static JPanel createBottomPanel(){
             JPanel panel = new JPanel();
 
+            panel.setLayout(new BorderLayout());
+
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setBackground(backgroundColor);
+
             // Creating buttons
             buttonHome = new JButton("Home");
             buttonMovies = new JButton("Movies");
             buttonSeries = new JButton("Series");
             buttonFavorites = new JButton("Favorites");
 
+            // Getting categories into dropdown
+            List<String> categories = (mediaRegistry.getCategories().stream()).toList();
+            JComboBox<String> dropDownCategories = new JComboBox<>();
+
+            dropDownCategories.addItem("All categories");
+            for (String category : mediaRegistry.getCategories()){
+                dropDownCategories.addItem(category);
+            }
+
+
             // Add event listeners
             buttonHome.addActionListener((e) -> showAll());
             buttonMovies.addActionListener((e) -> showMovies());
             buttonSeries.addActionListener((e) -> showSeries());
 
-            // Adding buttons
-            panel.add(buttonHome);
-            panel.add(buttonMovies);
-            panel.add(buttonSeries);
-            panel.add(buttonFavorites);
+            dropDownCategories.addActionListener((e) -> setCategory(dropDownCategories.getSelectedItem().toString()));
 
-            // add spacing
-            panel.add(new JToolBar.Separator(new Dimension(50, 0)));
+            // Adding buttons to sub-panel
+            buttonPanel.add(buttonHome);
+            buttonPanel.add(buttonMovies);
+            buttonPanel.add(buttonSeries);
+            buttonPanel.add(buttonFavorites);
 
+            // Adding the dropdown menu to sub-panel
+            buttonPanel.add(dropDownCategories);
+
+
+            // Sorting on the right side of the menubar
+            JPanel sortPanel = new JPanel();
+            sortPanel.setBackground(backgroundColor);
             // Adding label
-            JLabel year = new JLabel("By year");
-            JButton yearAsc = new JButton("↑");
-            JButton yearDes = new JButton("↓");
+            JLabel yearText = new JLabel("By year");
+            yearText.setForeground(Color.white);
+            JButton yearAsc = new JButton("-");
 
-            yearAsc.addActionListener((e) -> setSortByYear(true));
-            yearDes.addActionListener((e) -> setSortByYear(false));
+            JLabel ratingText = new JLabel("By rating");
+            ratingText.setForeground(Color.white);
+            JButton ratingAsc = new JButton("-");
 
-            JLabel rating = new JLabel("By rating");
-            JButton ratingAsc = new JButton("↑");
-            JButton ratingDes = new JButton("↓");
+            yearAsc.addActionListener((e) -> {
+                setSortByYear();
 
-            ratingAsc.addActionListener((e) -> setSortByRating(true));
-            ratingDes.addActionListener((e) -> setSortByRating(false));
+                if(order){
+                    yearAsc.setText("↑");
+                } else {
+                    yearAsc.setText("↓");
+                }
 
-            panel.add(year);
-            panel.add(yearAsc);
-            panel.add(yearDes);
+                ratingAsc.setText("-");
+            });
 
-            panel.add(rating);
-            panel.add(ratingAsc);
-            panel.add(ratingDes);
+            ratingAsc.addActionListener((e) -> {
+                setSortByRating();
 
-            // Debugging color
-            panel.setBackground(Color.green);
+                if(order){
+                    ratingAsc.setText("↑");
+                } else {
+                    ratingAsc.setText("↓");
+                }
+
+                yearAsc.setText("-");
+            });
+
+            // Adding sorting visuals to the sub-panel
+            sortPanel.add(yearText);
+            sortPanel.add(yearAsc);
+
+            sortPanel.add(ratingText);
+            sortPanel.add(ratingAsc);
+
+
+            // Add sub-panels and set the background color
+            panel.add(buttonPanel, BorderLayout.LINE_START);
+            panel.add(sortPanel, BorderLayout.LINE_END);
+            panel.setBackground(backgroundColor);
 
             return panel;
         }
 
-        public static JScrollPane createMainPanel(){
-            // TODO Load media into this view
 
+        public static JScrollPane createMainPanel(){
             JPanel content = new JPanel();
             content.setLayout(new GridBagLayout());
             GridBagConstraints constraints = new GridBagConstraints();
@@ -168,16 +237,16 @@ public class MainFrame extends JFrame {
             constraints.weightx = 1.0;
             constraints.ipadx = 15;
             constraints.ipady = 15;
-            constraints.anchor = media.size() < 17 ? GridBagConstraints.FIRST_LINE_START : GridBagConstraints.CENTER;
+            constraints.anchor = displayedMedia.size() < 17 ? GridBagConstraints.FIRST_LINE_START : GridBagConstraints.CENTER;
 
             JScrollPane panel = new JScrollPane(content);
             panel.getVerticalScrollBar().setUnitIncrement(10);
             panel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-            content.setBackground(Color.darkGray);
+            content.setBackground(backgroundColor);
 
             int counter = 0;
-            for (Media m : media) {
+            for (Media m : displayedMedia) {
                 constraints.gridy = counter / 8;
 
                 content.add(new JLabel(new ImageIcon(m.getCoverImage())), constraints);
@@ -194,27 +263,35 @@ public class MainFrame extends JFrame {
             return panel;
         }
 
-        static void setMedia (List<Media> m) {
-            media = sort(m);
+        static void setDisplayedMedia(List<Media> media) {
+            displayedMedia = sort(media);
         }
 
-        static void setSelectedMedia (List<Media> m) {
-            selectedMedia = sort(m);
+        static void setSelectedMedia (List<Media> media) {
+            selectedMedia = media;
+            categorizedMedia = filterByCategory(media);
         }
 
-        static void setSortByYear(boolean o) {
-            order = o;
+        static void setSortByYear() {
+            order = !order;
             sortByYear = true;
             sortByRating = false;
-            setMedia(media);
+            setDisplayedMedia(displayedMedia);
             updateContent();
         }
 
-        static void setSortByRating(boolean o) {
-            order = o;
+        static void setSortByRating() {
+            order = !order;
             sortByRating = true;
             sortByYear = false;
-            setMedia(media);
+            setDisplayedMedia(displayedMedia);
+            updateContent();
+        }
+
+        static void setCategory(String category){
+            selectedCategory = category;
+            categorizedMedia = filterByCategory(selectedMedia);
+            search();
             updateContent();
         }
 
@@ -225,37 +302,35 @@ public class MainFrame extends JFrame {
         }
 
         static void search () {
-            setMedia(mediaRegistry.search(searchBar.getText(), selectedMedia));
+            setDisplayedMedia(mediaRegistry.search(searchBar.getText(), categorizedMedia));
             updateContent();
         }
 
         static void showAll() {
-            setMedia(mediaRegistry.getAllMedia());
-            setSelectedMedia(media);
+            setDisplayedMedia(mediaRegistry.getAllMedia());
+            setSelectedMedia(mediaRegistry.getAllMedia());
             search();
-            // TODO: Add styling to buttons on click
-            // buttonHome.setBackground(Color.darkGray);
-            // updateBar();
             updateContent();
         }
 
         static void showMovies () {
-            setMedia(mediaRegistry.getMovies());
-            setSelectedMedia(media);
+            setDisplayedMedia(mediaRegistry.getMovies());
+            setSelectedMedia(mediaRegistry.getMovies());
             search();
-            // buttonMovies.setBackground(Color.darkGray);
-            // updateBar();
+            updateContent();
+        }
+        static void showSeries () {
+            setDisplayedMedia(mediaRegistry.getSeries());
+            setSelectedMedia(mediaRegistry.getSeries());
+            search();
             updateContent();
         }
 
-        static void showSeries () {
-            setMedia(mediaRegistry.getSeries());
-            setSelectedMedia(media);
-            search();
-            // buttonSeries.setBackground(Color.darkGray);
-            // updateBar();
-            updateContent();
+        static List<Media> filterByCategory(List<Media> media){
+            if (selectedCategory.equals("") || selectedCategory.equals("All categories")) return media;
+            return new ArrayList<>(media.stream().filter(x -> x.getCategories().contains(selectedCategory.toLowerCase())).toList());
         }
+
 
         static void updateContent() {
             frame.remove(mainPanel);
