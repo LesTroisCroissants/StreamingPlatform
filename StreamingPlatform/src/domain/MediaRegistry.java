@@ -234,7 +234,7 @@ public class MediaRegistry implements MediaInfo {
      * Sends the list of favorites to the data layer for saving
      */
     @Override
-    public void saveFavorites(){
+    public void saveFavorites() throws FileNotFoundException{
         List<String> favorites = new ArrayList<>();
         for (Media m : getFavorites())
             favorites.add(m.getTitle());

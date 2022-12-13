@@ -9,5 +9,5 @@ public interface DataAccess {
     List<String> getMovieInfo();
     List<String> getSeriesInfo();
     List<String> getFavorites();
-    void saveFavorites(List<String> favorites);
+    void saveFavorites(List<String> favorites) throws FileNotFoundException;
 }
