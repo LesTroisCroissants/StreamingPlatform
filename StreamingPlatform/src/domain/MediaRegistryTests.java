@@ -10,6 +10,12 @@ public class MediaRegistryTests {
 
     private MediaRegistry mediaRegistry;
 
+
+    @Test
+    public void testMediaRegistryCreation(){
+        assertFalse(mediaRegistry.getAllMedia().size() == 0);
+    }
+
     @Test
     public void testSortByRating(){
         //Tests ascending
