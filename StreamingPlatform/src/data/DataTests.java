@@ -11,11 +11,6 @@ import org.junit.Test;
 public class DataTests {
 	private Data data;
 
-	private final String dataPath = "StreamingPlatform/src/data/Data/";
-	private final String moviePath = dataPath + "film.txt";
-	private final String seriesPath = dataPath + "serier.txt";
-
-	
 	@Test
 	public void testGetCategories(){
 		String[] movieCategories = new String[] {"Crime", "Drama", "Biography", "Sport", "History", "Romance", "War", "Mystery", "Adventure", "Family", "Fantasy", "Thriller", "Horror", "Film-Noir", "Action", "Sci-fi", "Comedy" , "Musical", "Western", "Music"};

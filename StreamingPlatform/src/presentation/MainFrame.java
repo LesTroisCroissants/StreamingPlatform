@@ -6,6 +6,8 @@ import domain.MediaInfo;
 import domain.MediaRegistry;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -67,8 +69,10 @@ public class MainFrame extends JFrame {
                 setDisplayedMedia(mediaRegistry.getAllMedia());
                 setSelectedMedia(mediaRegistry.getAllMedia());
                 categorizedMedia = mediaRegistry.getAllMedia();
-            } catch (FileNotFoundException e){ // TODO handle this with a popup
-                System.out.println("Hej, you error! :)");
+            } catch (FileNotFoundException e){
+                JLabel errorMessage = new JLabel("The program could not find the media files.");
+                JOptionPane.showConfirmDialog(frame, errorMessage, "File not found!", JOptionPane.DEFAULT_OPTION);
+                System.exit(0);
             }
 
             frame = new JFrame("Pastryeam");
@@ -84,9 +88,35 @@ public class MainFrame extends JFrame {
 
             // Frame settings
             frame.setSize(1280, 720);
-            frame.setMaximumSize(new Dimension(1280, 720));
+            frame.setResizable(false);
             frame.setVisible(true);
             frame.requestFocusInWindow();
+            frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+
+            // Handling closing the application
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    trySaveAndClose();
+                }
+            });
+        }
+
+        public static void trySaveAndClose(){
+            try {
+                mediaRegistry.saveFavorites();
+                System.exit(0);
+            } catch (FileNotFoundException saveFavoritesException) {
+                JLabel errorMessage = new JLabel("Could not save favorites.");
+
+                // Makes the popup
+                int returnedOption = JOptionPane.showConfirmDialog(frame,errorMessage, "Save Error!", JOptionPane.OK_CANCEL_OPTION);
+
+                int okButton = 0;
+                if (returnedOption == okButton){
+                    System.exit(0);
+                }
+            }
         }
         
         public static JMenuBar createMenuBar(){
@@ -109,6 +139,7 @@ public class MainFrame extends JFrame {
             panel.setLayout(new BorderLayout());
             panel.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
 
+            // Left side of the topPanel
             JPanel leftSidePanel = new JPanel();
             leftSidePanel.setLayout(new BorderLayout());
             leftSidePanel.setBackground(backgroundColor);
@@ -138,7 +169,7 @@ public class MainFrame extends JFrame {
             panel.add(leftSidePanel, BorderLayout.LINE_START);
 
 
-
+            // Right side of the topPanel
             JPanel searchPanel = new JPanel(new BorderLayout());
 
             // search bar
@@ -198,7 +229,7 @@ public class MainFrame extends JFrame {
 
 
             // Add event listeners
-            buttonHome.addActionListener((e) -> showAll());
+            buttonHome.addActionListener((e) -> {showAll(); dropDownCategories.setSelectedIndex(0); searchBar.setText("");});
             buttonMovies.addActionListener((e) -> showMovies());
             buttonSeries.addActionListener((e) -> showSeries());
 
@@ -275,7 +306,7 @@ public class MainFrame extends JFrame {
             constraints.weightx = 1.0;
             constraints.ipadx = 15;
             constraints.ipady = 15;
-            constraints.anchor = displayedMedia.size() < 17 ? GridBagConstraints.FIRST_LINE_START : GridBagConstraints.CENTER;
+            constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 
             JScrollPane panel = new JScrollPane(content);
             panel.getVerticalScrollBar().setUnitIncrement(10);
