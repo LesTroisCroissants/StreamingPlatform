@@ -102,12 +102,13 @@ public class MainFrame extends JFrame {
 
 
             try {
-                BufferedImage logoImage = ImageIO.read(new File("StreamingPlatform/src/data/Data/pastryeam_logo.png"));
+                BufferedImage logoImage = ImageIO.read(new File("StreamingPlatform/src/data/Data/presentation_images/pastryeam_logo.png"));
                 JLabel logoLabel = new JLabel(new ImageIcon(logoImage.getScaledInstance(329,56, Image.SCALE_SMOOTH)));
                 panel.add(logoLabel, BorderLayout.LINE_START);
             } catch (IOException e){
                 System.out.println("Could not load logo!");
             }
+
 
             JPanel searchPanel = new JPanel(new BorderLayout());
 
@@ -120,6 +121,16 @@ public class MainFrame extends JFrame {
             searchPanel.setBorder(new EmptyBorder(14,0,14,0));
             searchPanel.setBackground(backgroundColor);
 
+            // Adding the search icon
+            try {
+                BufferedImage searchIcon = ImageIO.read(new File("StreamingPlatform/src/data/Data/presentation_images/search.png"));
+                JLabel searchIconLabel = new JLabel(new ImageIcon(searchIcon.getScaledInstance(50,50, Image.SCALE_SMOOTH)));
+                searchIconLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,15));
+                searchPanel.add(searchIconLabel, BorderLayout.LINE_START);
+            } catch (IOException e){
+                System.out.println("Could not load search icon!");
+            }
+
             searchBar.getDocument().addDocumentListener(new DocumentListener() {
                 public void insertUpdate(DocumentEvent e) { search(); }
                 public void removeUpdate(DocumentEvent e) { search(); }
@@ -129,8 +140,6 @@ public class MainFrame extends JFrame {
             panel.add(searchPanel, BorderLayout.LINE_END);
 
             panel.setBackground(backgroundColor);
-            // Debugging color
-            // panel.setBackground(Color.cyan);
 
             return panel;
         }
