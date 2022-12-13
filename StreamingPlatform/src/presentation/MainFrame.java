@@ -225,6 +225,8 @@ public class MainFrame extends JFrame {
             panel.add(sortPanel, BorderLayout.LINE_END);
             panel.setBackground(backgroundColor);
 
+            panel.setBorder(new EmptyBorder(0, 20, 0, 20));
+
             return panel;
         }
 
