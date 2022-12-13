@@ -33,6 +33,15 @@ public class MainFrame extends JFrame {
 
         // Top panel content
         static JTextField searchBar;
+        static String aboutPageText =
+                """ 
+                <html>
+                Pastryeam made with Love & French Pastry by Les Trois Croissants <br>
+                Version 1.0.0 <br>
+                Icons: Flaticon.com <br>
+                Images provided by ITU
+                </html>
+                """;
 
         // Bottom panel content
         static JButton buttonHome;
@@ -100,14 +109,34 @@ public class MainFrame extends JFrame {
             panel.setLayout(new BorderLayout());
             panel.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
 
+            JPanel leftSidePanel = new JPanel();
+            leftSidePanel.setLayout(new BorderLayout());
+            leftSidePanel.setBackground(backgroundColor);
 
+            // Adding pastryeam logo
             try {
                 BufferedImage logoImage = ImageIO.read(new File("StreamingPlatform/src/data/Data/presentation_images/pastryeam_logo.png"));
                 JLabel logoLabel = new JLabel(new ImageIcon(logoImage.getScaledInstance(329,56, Image.SCALE_SMOOTH)));
-                panel.add(logoLabel, BorderLayout.LINE_START);
+                leftSidePanel.add(logoLabel, BorderLayout.LINE_START);
             } catch (IOException e){
                 System.out.println("Could not load logo!");
             }
+
+            // Adding "info i" icon
+            try {
+                BufferedImage logoImage = ImageIO.read(new File("StreamingPlatform/src/data/Data/presentation_images/information_i.png"));
+                JLabel logoLabel = new JLabel(new ImageIcon(logoImage.getScaledInstance(25,25, Image.SCALE_SMOOTH)));
+                logoLabel.setBorder(BorderFactory.createEmptyBorder(0,25,0,0));
+
+                logoLabel.setToolTipText(aboutPageText);
+
+                leftSidePanel.add(logoLabel, BorderLayout.LINE_END);
+            } catch (IOException e){
+                System.out.println("Could not load logo!");
+            }
+
+            panel.add(leftSidePanel, BorderLayout.LINE_START);
+
 
 
             JPanel searchPanel = new JPanel(new BorderLayout());
@@ -258,7 +287,9 @@ public class MainFrame extends JFrame {
             for (Media m : displayedMedia) {
                 constraints.gridy = counter / 8;
 
-                content.add(new JLabel(new ImageIcon(m.getCoverImage())), constraints);
+                JLabel coverImg = new JLabel(new ImageIcon(m.getCoverImage()));
+                coverImg.setToolTipText(m.getTitle());
+                content.add(coverImg, constraints);
                 counter++;
             }
 
