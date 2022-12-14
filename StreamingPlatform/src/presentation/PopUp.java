@@ -2,7 +2,6 @@ package presentation;
 
 import domain.Media;
 import domain.MediaInfo;
-import domain.MediaRegistry;
 import domain.Series;
 
 import javax.swing.*;
@@ -106,11 +105,9 @@ public class PopUp extends JPanel {
         actions.setBackground(backgroundColor);
 
         JButton play = new JButton("Play");
-        play.addActionListener(e -> {
-            JOptionPane.showConfirmDialog(
-                    MainFrame.frame, "This feature is yet to be implemented", "Not playable", JOptionPane.DEFAULT_OPTION
-            );
-        });
+        play.addActionListener(e -> JOptionPane.showConfirmDialog(
+                MainFrame.frame, "This feature is yet to be implemented", "Not playable", JOptionPane.DEFAULT_OPTION
+        ));
         actions.add(play);
 
         JButton favorite = new JButton(

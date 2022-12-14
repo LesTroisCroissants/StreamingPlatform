@@ -22,49 +22,35 @@ import java.util.List;
 
 public class MainFrame extends JFrame {
         static JFrame frame;
-        static MediaInfo mediaRegistry;
-        static List<Media> selectedMedia; // Movies & Series || Movies || Series
-        static List<Media> categorizedMedia;
-        static List<Media> displayedMedia; // Shown on screen
+        private static MediaInfo mediaRegistry;
+        private static List<Media> selectedMedia; // Movies & Series || Movies || Series
+        private static List<Media> categorizedMedia;
+        private static List<Media> displayedMedia; // Shown on screen
 
-        static String selectedView = "all";
-        static String selectedCategory = "All categories";
+        // Selected category or media
+        private static String selectedView = "all";
+        private static String selectedCategory = "All categories";
 
         // Popup show movie
-        static JPanel popup;
+        private static JPanel popup;
 
         // Panels
-        static JMenuBar menuBar;
-        static JLayeredPane mainPanel;
+        private static JLayeredPane mainPanel;
 
         // Top panel content
-        static JTextField searchBar;
-        static String aboutPageText =
-                """ 
-                <html>
-                Pastryeam made with Love & French Pastry by Les Trois Croissants <br>
-                Version 1.0.0 <br>
-                Icons: Flaticon.com <br>
-                Images provided by ITU
-                </html>
-                """;
-
-        // Bottom panel content
-        static JButton buttonHome;
-        static JButton buttonMovies;
-        static JButton buttonSeries;
-        static JButton buttonFavorites;
+        private static JTextField searchBar;
 
         // Sorting
-        static boolean sortByYear;
-        static boolean sortByRating;
-        static boolean order;
+        private static boolean sortByYear;
+        private static boolean sortByRating;
+        private static boolean order;
 
-        static ImageIcon favoriteImg;
-        static Color backgroundColor = new Color(28,28,28);
+        // Loading image on startup
+        private static ImageIcon favoriteImg;
+        private static final Color backgroundColor = new Color(28,28,28);
 
 
-        public static void init(){
+        private static void init(){
             sortByRating = false;
             sortByYear = false;
             order = false;
@@ -81,7 +67,7 @@ public class MainFrame extends JFrame {
                 JOptionPane.showConfirmDialog(frame, errorMessage, "File not found!", JOptionPane.DEFAULT_OPTION);
                 System.exit(0);
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                System.out.println("Could not find favorite icon!");
             }
 
             frame = new JFrame("Pastryeam");
@@ -111,7 +97,7 @@ public class MainFrame extends JFrame {
             });
         }
 
-        public static void trySaveAndClose(){
+        private static void trySaveAndClose(){
             try {
                 mediaRegistry.saveFavorites();
                 System.exit(0);
@@ -128,8 +114,8 @@ public class MainFrame extends JFrame {
             }
         }
         
-        public static JMenuBar createMenuBar(){
-            menuBar = new JMenuBar();
+        private static JMenuBar createMenuBar(){
+            JMenuBar menuBar = new JMenuBar();
 
             JPanel topPanel = createTopPanel();
             JPanel bottomPanel = createBottomPanel();
@@ -142,7 +128,7 @@ public class MainFrame extends JFrame {
             return menuBar;
         }
 
-        public static JPanel createTopPanel(){
+        private static JPanel createTopPanel(){
             JPanel panel = new JPanel();
 
             panel.setLayout(new BorderLayout());
@@ -168,7 +154,18 @@ public class MainFrame extends JFrame {
                 JLabel logoLabel = new JLabel(new ImageIcon(logoImage.getScaledInstance(25,25, Image.SCALE_SMOOTH)));
                 logoLabel.setBorder(BorderFactory.createEmptyBorder(0,25,0,0));
 
-                logoLabel.setToolTipText(aboutPageText);
+                // About tooltip
+                ToolTipManager.sharedInstance().setDismissDelay(20000);
+                logoLabel.setToolTipText(
+                    """ 
+                    <html>
+                    Pastryeam made with Love & French Pastry by Les Trois Croissants <br>
+                    Version 1.0.0 <br>
+                    Icons: Flaticon.com <br>
+                    Images provided by ITU
+                    </html>
+                    """
+                );
 
                 leftSidePanel.add(logoLabel, BorderLayout.LINE_END);
             } catch (IOException e){
@@ -213,7 +210,7 @@ public class MainFrame extends JFrame {
             return panel;
         }
 
-        public static JPanel createBottomPanel(){
+        private static JPanel createBottomPanel(){
             JPanel panel = new JPanel();
 
             panel.setLayout(new BorderLayout());
@@ -222,13 +219,12 @@ public class MainFrame extends JFrame {
             buttonPanel.setBackground(backgroundColor);
 
             // Creating buttons
-            buttonHome = new JButton("Home");
-            buttonMovies = new JButton("Movies");
-            buttonSeries = new JButton("Series");
-            buttonFavorites = new JButton("Favorites");
+            JButton buttonHome = new JButton("Home");
+            JButton buttonMovies = new JButton("Movies");
+            JButton buttonSeries = new JButton("Series");
+            JButton buttonFavorites = new JButton("Favorites");
 
             // Getting categories into dropdown
-            List<String> categories = (mediaRegistry.getCategories().stream()).toList();
             JComboBox<String> dropDownCategories = new JComboBox<>();
 
             dropDownCategories.addItem("All categories");
@@ -309,7 +305,7 @@ public class MainFrame extends JFrame {
         }
 
 
-        public static JLayeredPane createMainPanel(){
+        private static JLayeredPane createMainPanel(){
             JPanel content = new JPanel();
             content.setLayout(new GridBagLayout());
             GridBagConstraints constraints = new GridBagConstraints();
@@ -373,16 +369,16 @@ public class MainFrame extends JFrame {
             return layered;
         }
 
-        static void setDisplayedMedia(List<Media> media) {
+        private static void setDisplayedMedia(List<Media> media) {
             displayedMedia = sort(media);
         }
 
-        static void setSelectedMedia (List<Media> media) {
+        private static void setSelectedMedia (List<Media> media) {
             selectedMedia = media;
             categorizedMedia = filterByCategory(media);
         }
 
-        static void setSortByYear() {
+        private static void setSortByYear() {
             order = !order;
             sortByYear = true;
             sortByRating = false;
@@ -390,7 +386,7 @@ public class MainFrame extends JFrame {
             updateContent();
         }
 
-        static void setSortByRating() {
+        private static void setSortByRating() {
             order = !order;
             sortByRating = true;
             sortByYear = false;
@@ -398,25 +394,25 @@ public class MainFrame extends JFrame {
             updateContent();
         }
 
-        static void setCategory(String category){
+        private static void setCategory(String category){
             selectedCategory = category;
             categorizedMedia = filterByCategory(selectedMedia);
             search();
             updateContent();
         }
 
-        static List<Media> sort(List<Media> m) {
+        private static List<Media> sort(List<Media> m) {
             if (sortByRating) return mediaRegistry.sortRating(m, order);
             if (sortByYear) return mediaRegistry.sortYear(m, order);
             return m;
         }
 
-        static void search () {
+        private static void search () {
             setDisplayedMedia(mediaRegistry.search(searchBar.getText(), categorizedMedia));
             updateContent();
         }
 
-        static void showMedia(List<Media> media, String view) {
+        private static void showMedia(List<Media> media, String view) {
             selectedView = view;
             setDisplayedMedia(media);
             setSelectedMedia(media);
@@ -424,13 +420,13 @@ public class MainFrame extends JFrame {
             updateContent();
         }
 
-        static List<Media> filterByCategory(List<Media> media){
+        private static List<Media> filterByCategory(List<Media> media){
             if (selectedCategory.equals("") || selectedCategory.equals("All categories")) return media;
             return new ArrayList<>(media.stream().filter(x -> x.getCategories().contains(selectedCategory.toLowerCase())).toList());
         }
 
 
-        static void updateContent() {
+        private static void updateContent() {
             frame.remove(mainPanel);
             mainPanel = createMainPanel();
             if (popup != null) mainPanel.add(popup);
@@ -438,7 +434,7 @@ public class MainFrame extends JFrame {
             frame.revalidate();
         }
 
-        static void mediaPopup(Media media) {
+        private static void mediaPopup(Media media) {
             if (popup != null) return;
             popup = new PopUp(media, mediaRegistry);
 
@@ -460,7 +456,7 @@ public class MainFrame extends JFrame {
             mainPanel.add(popup, JLayeredPane.POPUP_LAYER);
         }
 
-        static void hidePopup() {
+        private static void hidePopup() {
             mainPanel.remove(popup);
             popup = null;
             frame.repaint();
