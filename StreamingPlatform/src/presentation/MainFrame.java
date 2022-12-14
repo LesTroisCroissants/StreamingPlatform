@@ -26,6 +26,8 @@ public class MainFrame extends JFrame {
         static List<Media> selectedMedia; // Movies & Series || Movies || Series
         static List<Media> categorizedMedia;
         static List<Media> displayedMedia; // Shown on screen
+
+        static String selectedView = "all";
         static String selectedCategory = "All categories";
 
         // Popup show movie
@@ -230,10 +232,10 @@ public class MainFrame extends JFrame {
             }
 
             // Add event listeners
-            buttonHome.addActionListener((e) -> {showMedia(mediaRegistry.getAllMedia()); dropDownCategories.setSelectedIndex(0); searchBar.setText("");});
-            buttonMovies.addActionListener((e) -> showMedia(mediaRegistry.getMovies()));
-            buttonSeries.addActionListener((e) -> showMedia(mediaRegistry.getSeries()));
-            buttonFavorites.addActionListener((e) -> showMedia(mediaRegistry.getFavorites()));
+            buttonHome.addActionListener((e) -> {showMedia(mediaRegistry.getAllMedia(), "all"); dropDownCategories.setSelectedIndex(0); searchBar.setText("");});
+            buttonMovies.addActionListener((e) -> showMedia(mediaRegistry.getMovies(), "movies"));
+            buttonSeries.addActionListener((e) -> showMedia(mediaRegistry.getSeries(), "series"));
+            buttonFavorites.addActionListener((e) -> showMedia(mediaRegistry.getFavorites(), "favorites"));
 
             dropDownCategories.addActionListener((e) -> setCategory(dropDownCategories.getSelectedItem().toString()));
 
@@ -345,7 +347,8 @@ public class MainFrame extends JFrame {
 
             JLayeredPane layered = new JLayeredPane();
 
-            scroll.setBounds(0,0,1265,561);
+            // Set size to fit rest of space
+            scroll.setBounds(0,0,1265,550);
 
             layered.add(scroll, JLayeredPane.DEFAULT_LAYER);
 
@@ -395,7 +398,8 @@ public class MainFrame extends JFrame {
             updateContent();
         }
 
-        static void showMedia(List<Media> media) {
+        static void showMedia(List<Media> media, String view) {
+            selectedView = view;
             setDisplayedMedia(media);
             setSelectedMedia(media);
             search();
@@ -442,5 +446,9 @@ public class MainFrame extends JFrame {
             mainPanel.remove(popup);
             popup = null;
             frame.repaint();
+            if (selectedView.equals("favorites")) {
+                showMedia(mediaRegistry.getFavorites(), "favorites");
+                updateContent();
+            }
         }
     }

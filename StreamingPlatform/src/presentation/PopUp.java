@@ -177,8 +177,6 @@ public class PopUp extends JPanel {
     }
 
     private void favoriteMedia() {
-        media.setFavorite(!media.isFavorite());
-        System.out.println(media.isFavorite());
         mediaRegistry.setFavorite(media, !media.isFavorite());
         update();
     }
