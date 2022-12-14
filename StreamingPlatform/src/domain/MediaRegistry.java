@@ -17,6 +17,7 @@ public class MediaRegistry implements MediaInfo {
     private List<Media> movies;
     private List<Media> series;
     private Set<String> categories;
+    private List<Media> favorites;
 
     public MediaRegistry() throws FileNotFoundException {
         movies = new ArrayList<>();
@@ -132,10 +133,8 @@ public class MediaRegistry implements MediaInfo {
      * Marks all media registered as a favorite in the data as a favorite in the object
      */
     private void loadFavorites(){
-        List<String> favorites = data.getFavorites();
-        for (Media m : getAllMedia())
-            if (favorites.contains(m.getTitle()))
-                m.setFavorite(true);
+        List<String> savedFavorites = data.getFavorites();
+        favorites = new ArrayList<>(getAllMedia().stream().filter(a -> savedFavorites.contains(a.getTitle())).toList());
     }
 
     /**
@@ -222,7 +221,8 @@ public class MediaRegistry implements MediaInfo {
      */
     @Override
     public void setFavorite(Media media, boolean shouldBeFavorite) {
-        media.setFavorite(shouldBeFavorite);
+        if (shouldBeFavorite) favorites.add(media);
+        else favorites.remove(media);
     }
 
     /**
@@ -230,10 +230,7 @@ public class MediaRegistry implements MediaInfo {
      */
     @Override
     public void saveFavorites(){
-        List<String> favorites = new ArrayList<>();
-        for (Media m : getFavorites())
-            favorites.add(m.getTitle());
-        data.saveFavorites(favorites);
+        data.saveFavorites(favorites.stream().map(m -> m.getTitle()).toList());
     }
 
     /**
@@ -241,11 +238,15 @@ public class MediaRegistry implements MediaInfo {
      */
     @Override
     public List<Media> getFavorites(){
-        List<Media> favorites = new ArrayList<>();
-        for (Media m : getAllMedia())
-            if (m.isFavorite())
-                favorites.add(m);
         return favorites;
+    }
+
+    /**
+     * Checks if media is added to favorites
+     */
+    @Override
+    public boolean isFavorite(Media media) {
+        return favorites.contains(media);
     }
 
     @Override

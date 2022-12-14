@@ -14,5 +14,6 @@ public interface MediaInfo {
     List<Media> getAllMedia();
     void setFavorite(Media media, boolean shouldBeFavorite);
     void saveFavorites();
+    boolean isFavorite(Media media);
     List<Media> getFavorites();
 }
