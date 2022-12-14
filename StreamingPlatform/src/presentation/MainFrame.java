@@ -352,17 +352,30 @@ public class MainFrame extends JFrame {
                 counter++;
             }
 
-             // TODO find prettier way to add empty space in the grid
-            int empty = 8 - (counter + 1 % 8) + 1;
-            constraints.weightx = 3.0;
-            for (int i = 0; i < empty; i++) {
-                content.add(new JLabel(""), constraints);
+            // Fill out empty space
+            if (displayedMedia.size() > 0) {
+                int empty = 8 - (counter + 1 % 8) + 1;
+                constraints.weightx = 3.0;
+                for (int i = 0; i < empty; i++) {
+                    content.add(new JLabel(""), constraints);
+                }
+            }
+
+            if (displayedMedia.size() == 0) {
+                JLabel message = new JLabel(
+                        (selectedView.equals("favorites") ? "No favorites have been added yet" : "No media matches the current selection")
+                );
+                message.setFont(new Font("Sans Serif", Font.PLAIN, 24));
+                message.setForeground(Color.white);
+                content.add(message);
             }
 
             JLayeredPane layered = new JLayeredPane();
 
+            int scrollWidth = System.getProperty("os.name").contains("Windows") ? 1265 : 1280;
+
             // Set size to fit rest of space
-            scroll.setBounds(0,0,1265,550);
+            scroll.setBounds(0,0,scrollWidth,550);
 
             layered.add(scroll, JLayeredPane.DEFAULT_LAYER);
 
