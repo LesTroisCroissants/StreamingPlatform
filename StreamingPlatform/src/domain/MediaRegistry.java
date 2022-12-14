@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import data.DataAccess;
 import data.Data;
 
 import javax.imageio.ImageIO;
 
 public class MediaRegistry implements MediaInfo {
-    private Data data;
+    private DataAccess data;
     private List<Media> movies;
     private List<Media> series;
     private Set<String> categories;
@@ -115,8 +116,12 @@ public class MediaRegistry implements MediaInfo {
         return episodes;
     };
 
-    private Set<String> parseCategories(String property) {
-        return Set.of(property.replaceAll(" ", "").split(","));
+    private Set<String> parseCategories(String rawCategories) {
+        return Set.of(rawCategories
+                .toLowerCase()
+                .replaceAll(" ", "")
+                .split(",")
+        );
     }
 
     private BufferedImage getCoverImage(String path) throws IOException {
@@ -124,8 +129,8 @@ public class MediaRegistry implements MediaInfo {
         return ImageIO.read(coverPath);
     }
 
-    private Double parseRating(String property) {
-        return Double.parseDouble(property.replace(",","."));
+    private Double parseRating(String rawRating) {
+        return Double.parseDouble(rawRating.replace(",","."));
     }
 
     /**
@@ -143,10 +148,9 @@ public class MediaRegistry implements MediaInfo {
      * Sorted by most relevant by title to relevant by category.
      */
     @Override
-    public List<Media> search(String input) {
-        List<Media> allMedia = getAllMedia();
-
-        List<Media> resultsTitle = allMedia.stream()
+    public List<Media> search(String input, List<Media> media) {
+        if (input.length() == 0) return media;
+        List<Media> resultsTitle = media.stream()
                 .filter(x -> x.getTitle()
                         .toLowerCase()
                         .contains(input.toLowerCase()))
@@ -154,9 +158,10 @@ public class MediaRegistry implements MediaInfo {
 
         List<Media> results = new ArrayList<>(resultsTitle);
 
-        List<Media> resultsCategory = allMedia.stream()
+        List<Media> resultsCategory = media.stream()
                 .filter(x -> x.getCategories()
-                        .contains(input) && !results.contains(x))
+                        .contains(input.trim().toLowerCase())
+                            && !results.contains(x))
                 .toList();
         results.addAll(resultsCategory);
 
@@ -229,7 +234,7 @@ public class MediaRegistry implements MediaInfo {
      * Sends the list of favorites to the data layer for saving
      */
     @Override
-    public void saveFavorites(){
+    public void saveFavorites() throws FileNotFoundException{
         List<String> favorites = new ArrayList<>();
         for (Media m : getFavorites())
             favorites.add(m.getTitle());

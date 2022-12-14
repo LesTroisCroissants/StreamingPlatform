@@ -92,7 +92,6 @@ public class Data implements DataAccess {
     @Override
     public List<String> getFavorites() {
         try {
-
             Scanner sc = new Scanner(new File(favoritesPath));
             List<String> favorites = new ArrayList<>();
 
@@ -103,7 +102,6 @@ public class Data implements DataAccess {
             return favorites;
 
         } catch (FileNotFoundException e) {
-            System.out.println("No favorites found!");
             return new ArrayList<String>();
         }
     }
@@ -112,18 +110,11 @@ public class Data implements DataAccess {
      * Saves favorites in a .txt-file
      */
     @Override
-    public void saveFavorites(List<String> favorites){
-        try {
+    public void saveFavorites(List<String> favorites) throws FileNotFoundException{
+        PrintWriter pw = new PrintWriter(new File(favoritesPath));
 
-            PrintWriter pw = new PrintWriter(new File(favoritesPath));
-
-            for (String s : favorites)
-                pw.println(s);
-            pw.close();
-
-        } catch (FileNotFoundException e){
-            System.out.println(e.getMessage());
-        }
+        for (String s : favorites)
+            pw.println(s);
+        pw.close();
     }
-
 }
