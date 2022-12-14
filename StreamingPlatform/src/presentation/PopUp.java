@@ -1,103 +1,195 @@
 package presentation;
 
 import domain.Media;
+import domain.MediaInfo;
 import domain.MediaRegistry;
-import domain.Season;
 import domain.Series;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.FileNotFoundException;
 
-public class PopUp {
+public class PopUp extends JPanel {
+    Media media;
+    MediaInfo mediaRegistry;
+    JPanel info;
+    JComboBox<String> seasons;
+    JComboBox<String> episodes;
+    int selectedSeason = 0;
+    int episodeAmount = 0;
 
-    static JFrame frame;
-    static JPanel content;
-    static JComboBox<String> seasons;
-    static Media media;
+    Color backgroundColor = new Color(80, 80, 80);
 
-    public static void main(String[] args) throws FileNotFoundException {
-        frame = new JFrame();
-        frame.setSize(1280, 720);
-        frame.setMaximumSize(new Dimension(1280, 720));
-
-        MediaRegistry mediaRegistry = new MediaRegistry();
-        media = mediaRegistry.getSeries().get(3);
-        if (media instanceof Series) populateSeasons();
-        content = create();
-        frame.add(content);
-
-        frame.setVisible(true);
+    public PopUp(Media media, MediaInfo mediaRegistry) {
+        super();
+        this.media = media;
+        this.mediaRegistry = mediaRegistry;
+        if (media instanceof Series) {
+            episodeAmount = ((Series) media).getSeasons().get(selectedSeason).getEpisodes().size();
+        }
+        create();
     }
 
-    public static JPanel create() {
-        JPanel container = new JPanel(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
+    private void create() {
+        setLayout(new GridBagLayout());
+        GridBagConstraints c = getInfoConstraints();
 
         c.weightx = 1.0;
-        container.add(cover(), c);
+        JLabel leftContent = cover();
+
+        // Negate invisible borders on cover JLabel
+        leftContent.setBorder(BorderFactory.createEmptyBorder(0,-48,0,0));
+        add(leftContent, c);
 
         c.weightx = 3.0;
-        container.add(info(), c);
+        add(info(), c);
 
-        return container;
+        setBackground(backgroundColor);
     }
 
-    public static void populateSeasons() {
-        seasons = new JComboBox<>();
-        for (int i = 0; i < ((Series) media).getSeasons().size(); i++) {
-            seasons.addItem("Season " + (i + 1));
-        }
-        seasons.addActionListener(PopUp::selectSeason);
-    }
+    private JPanel info() {
+        // Set up info with title
+        info = new JPanel(new BorderLayout());
+        info.setBackground(backgroundColor);
+        info.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
-    public static JLabel cover() {
-        return new JLabel(
-                new ImageIcon(media.getCoverImage().getScaledInstance(210, 314, Image.SCALE_SMOOTH))
+        JLabel title = new JLabel(media.getTitle());
+        title.setFont(new Font("Sans Serif", Font.PLAIN, 30));
+        title.setForeground(Color.white);
+        info.add(title, BorderLayout.PAGE_START);
+
+        // Content of main info
+        JPanel mainInfo = new JPanel(new BorderLayout());
+        mainInfo.setBackground(backgroundColor);
+
+        // Info about media
+        JPanel mediaInfo = new JPanel();
+        mediaInfo.setLayout(new BoxLayout(mediaInfo, BoxLayout.Y_AXIS));
+        mediaInfo.setBackground(backgroundColor);
+
+        String categoriesFormatted = media.getCategories().toString().replaceAll("[^a-zA-Z, ]", "");
+        JLabel categories = new JLabel("Categories: " + categoriesFormatted);
+        categories.setForeground(Color.white);
+
+        JLabel rating = new JLabel("Rating: " + media.getRating());
+        rating.setForeground(Color.white);
+
+        JLabel year = new JLabel("Released: " + media.getYear());
+        year.setForeground(Color.white);
+
+        JLabel endYear = new JLabel();
+        endYear.setForeground(Color.white);
+        if (media instanceof Series) endYear.setText("End year: " +
+                (((Series) media).getEndYear() == 0 ? "still going!" :
+                ((Series) media).getEndYear())
         );
-    }
 
-    public static JPanel info() {
-        JPanel panel = new JPanel(new BorderLayout());
+        // Adding elements
+        mediaInfo.add(Box.createRigidArea(new Dimension(0, 20)));
+        mediaInfo.add(categories);
+        mediaInfo.add(Box.createRigidArea(new Dimension(0, 5)));
+        mediaInfo.add(rating);
+        mediaInfo.add(Box.createRigidArea(new Dimension(0, 5)));
+        mediaInfo.add(year);
+        mediaInfo.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        JPanel mainInfo = new JPanel();
-        JLabel categories = new JLabel(media.getCategories().toString());
-        mainInfo.add(categories);
-        mainInfo.setBackground(Color.cyan);
-
-        panel.add(mainInfo, BorderLayout.PAGE_START);
 
         if (media instanceof Series) {
-            panel.add(seriesInfo());
+            mediaInfo.add(endYear);
+            mainInfo.add(seriesInfo(), BorderLayout.PAGE_END);
         }
 
-        return panel;
-    }
+        mainInfo.add(mediaInfo);
+        info.add(mainInfo, BorderLayout.CENTER);
 
-    public static JPanel seriesInfo() {
-        JPanel info = new JPanel();
-        info.add(seasons, BorderLayout.LINE_START);
+        JPanel actions = new JPanel();
+        actions.setBackground(backgroundColor);
 
-        JPanel episodes = new JPanel();
+        JButton play = new JButton("Play");
+        play.addActionListener(e -> {
+            JOptionPane.showConfirmDialog(
+                    MainFrame.frame, "This feature is yet to be implemented", "Not playable", JOptionPane.DEFAULT_OPTION
+            );
+        });
+        actions.add(play);
 
-        int episodeCount = ((Series) media).getSeasons().get(seasons.getSelectedIndex()).getEpisodes().size();
-        for (int i = 0; i < episodeCount; i++) {
-            episodes.add(new JLabel("Episode " + (i+1)));
-        }
+        JButton favorite = new JButton(
+                media.isFavorite() ? "Un-favorite" : "Favorite"
+        );
+        favorite.addActionListener(e -> favoriteMedia());
+        actions.add(favorite);
 
-        JScrollPane episodeView = new JScrollPane(episodes);
-        info.add(episodeView, BorderLayout.PAGE_END);
+        info.add(actions, BorderLayout.PAGE_END);
 
         return info;
     }
 
-    public static void selectSeason(ActionEvent e) {
-        frame.remove(content);
-        content = create();
-        frame.add(content);
-        frame.revalidate();
+    private void populateSeasons() {
+        seasons = new JComboBox<>();
+        for (int i = 0; i < ((Series) media).getSeasons().size(); i++) {
+            seasons.addItem("Season " + (i + 1));
+        }
+        seasons.setSelectedIndex(selectedSeason);
+        seasons.addActionListener(e -> selectSeason());
+    }
+
+    private void populateEpisodes() {
+        episodes = new JComboBox<>();
+
+        for (int i = 0; i < episodeAmount; i++) {
+            episodes.addItem("Episode " + (i+1));
+        }
+    }
+
+    private JLabel cover() {
+        return new JLabel(
+                // Image sized up to 1.5x size
+                new ImageIcon(media.getCoverImage().getScaledInstance(210, 314, Image.SCALE_SMOOTH))
+        );
+    }
+
+
+    private JPanel seriesInfo() {
+        JPanel series = new JPanel();
+        series.setBackground(backgroundColor);
+
+        populateSeasons();
+        populateEpisodes();
+        series.add(seasons, BorderLayout.PAGE_START);
+
+        series.add(episodes, BorderLayout.PAGE_END);
+
+        return series;
+    }
+
+    private GridBagConstraints getInfoConstraints() {
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 3.0;
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.LINE_START;
+        return c;
+    }
+
+    private void selectSeason() {
+        selectedSeason = seasons.getSelectedIndex();
+        episodeAmount = ((Series) media).getSeasons().get(selectedSeason).getEpisodes().size();
+
+        update();
+    }
+
+    private void favoriteMedia() {
+        media.setFavorite(!media.isFavorite());
+        System.out.println(media.isFavorite());
+        mediaRegistry.setFavorite(media, !media.isFavorite());
+        update();
+    }
+
+    private void update() {
+        remove(info);
+        info = info();
+
+        add(info, getInfoConstraints(),1);
+
+        revalidate();
+        repaint();
     }
 }

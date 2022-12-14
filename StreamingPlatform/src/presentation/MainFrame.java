@@ -6,8 +6,7 @@ import domain.MediaInfo;
 import domain.MediaRegistry;
 
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,9 +28,12 @@ public class MainFrame extends JFrame {
         static List<Media> displayedMedia; // Shown on screen
         static String selectedCategory = "All categories";
 
+        // Popup show movie
+        static JPanel popup;
+
         // Panels
         static JMenuBar menuBar;
-        static JScrollPane mainPanel;
+        static JLayeredPane mainPanel;
 
         // Top panel content
         static JTextField searchBar;
@@ -227,11 +229,11 @@ public class MainFrame extends JFrame {
                 dropDownCategories.addItem(category);
             }
 
-
             // Add event listeners
-            buttonHome.addActionListener((e) -> {showAll(); dropDownCategories.setSelectedIndex(0); searchBar.setText("");});
-            buttonMovies.addActionListener((e) -> showMovies());
-            buttonSeries.addActionListener((e) -> showSeries());
+            buttonHome.addActionListener((e) -> {showMedia(mediaRegistry.getAllMedia()); dropDownCategories.setSelectedIndex(0); searchBar.setText("");});
+            buttonMovies.addActionListener((e) -> showMedia(mediaRegistry.getMovies()));
+            buttonSeries.addActionListener((e) -> showMedia(mediaRegistry.getSeries()));
+            buttonFavorites.addActionListener((e) -> showMedia(mediaRegistry.getFavorites()));
 
             dropDownCategories.addActionListener((e) -> setCategory(dropDownCategories.getSelectedItem().toString()));
 
@@ -300,7 +302,7 @@ public class MainFrame extends JFrame {
         }
 
 
-        public static JScrollPane createMainPanel(){
+        public static JLayeredPane createMainPanel(){
             JPanel content = new JPanel();
             content.setLayout(new GridBagLayout());
             GridBagConstraints constraints = new GridBagConstraints();
@@ -310,9 +312,11 @@ public class MainFrame extends JFrame {
             constraints.ipady = 15;
             constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 
-            JScrollPane panel = new JScrollPane(content);
-            panel.getVerticalScrollBar().setUnitIncrement(10);
-            panel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane scroll = new JScrollPane(content);
+
+            if (popup != null) scroll.getVerticalScrollBar().setUnitIncrement(0);
+            else scroll.getVerticalScrollBar().setUnitIncrement(10);
+            scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
             content.setBackground(backgroundColor);
 
@@ -321,7 +325,13 @@ public class MainFrame extends JFrame {
                 constraints.gridy = counter / 8;
 
                 JLabel coverImg = new JLabel(new ImageIcon(m.getCoverImage()));
-                coverImg.setToolTipText(m.getTitle());
+                // coverImg.setToolTipText(m.getTitle());
+                coverImg.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        mediaPopup(m);
+                    }
+                });
                 content.add(coverImg, constraints);
                 counter++;
             }
@@ -333,7 +343,13 @@ public class MainFrame extends JFrame {
                 content.add(new JLabel(""), constraints);
             }
 
-            return panel;
+            JLayeredPane layered = new JLayeredPane();
+
+            scroll.setBounds(0,0,1265,561);
+
+            layered.add(scroll, JLayeredPane.DEFAULT_LAYER);
+
+            return layered;
         }
 
         static void setDisplayedMedia(List<Media> media) {
@@ -379,22 +395,9 @@ public class MainFrame extends JFrame {
             updateContent();
         }
 
-        static void showAll() {
-            setDisplayedMedia(mediaRegistry.getAllMedia());
-            setSelectedMedia(mediaRegistry.getAllMedia());
-            search();
-            updateContent();
-        }
-
-        static void showMovies () {
-            setDisplayedMedia(mediaRegistry.getMovies());
-            setSelectedMedia(mediaRegistry.getMovies());
-            search();
-            updateContent();
-        }
-        static void showSeries () {
-            setDisplayedMedia(mediaRegistry.getSeries());
-            setSelectedMedia(mediaRegistry.getSeries());
+        static void showMedia(List<Media> media) {
+            setDisplayedMedia(media);
+            setSelectedMedia(media);
             search();
             updateContent();
         }
@@ -408,15 +411,36 @@ public class MainFrame extends JFrame {
         static void updateContent() {
             frame.remove(mainPanel);
             mainPanel = createMainPanel();
+            if (popup != null) mainPanel.add(popup);
             frame.add(mainPanel);
             frame.revalidate();
         }
 
-        static void updateBar() {
-            frame.remove(mainPanel);
-            frame.remove(menuBar);
-            menuBar = createMenuBar();
-            frame.add(menuBar);
-            updateContent();
+        static void mediaPopup(Media media) {
+            if (popup != null) return;
+            popup = new PopUp(media, mediaRegistry);
+
+            JLabel popupClose = new JLabel("✖");
+            popupClose.setFont(new Font("Sans-Serif", Font.PLAIN,28));
+            popupClose.setBorder(BorderFactory.createEmptyBorder(5, 5,5,10));
+            popupClose.setForeground(new Color(255,255,255));
+            popupClose.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    hidePopup();
+                }
+            });
+            GridBagConstraints c = new GridBagConstraints();
+            c.anchor = GridBagConstraints.PAGE_START;
+            popup.add(popupClose, c);
+            popup.setBounds(320,100,665, 314);
+
+            mainPanel.add(popup, JLayeredPane.POPUP_LAYER);
+        }
+
+        static void hidePopup() {
+            mainPanel.remove(popup);
+            popup = null;
+            frame.repaint();
         }
     }
