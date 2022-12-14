@@ -60,7 +60,7 @@ public class MainFrame extends JFrame {
         static boolean sortByRating;
         static boolean order;
 
-
+        static ImageIcon favoriteImg;
         static Color backgroundColor = new Color(28,28,28);
 
 
@@ -73,10 +73,15 @@ public class MainFrame extends JFrame {
                 setDisplayedMedia(mediaRegistry.getAllMedia());
                 setSelectedMedia(mediaRegistry.getAllMedia());
                 categorizedMedia = mediaRegistry.getAllMedia();
+
+                BufferedImage favoriteImgBuffer = ImageIO.read(new File("StreamingPlatform/src/data/Data/presentation_images/favorite.png"));
+                favoriteImg = new ImageIcon(favoriteImgBuffer.getScaledInstance(64,64, Image.SCALE_SMOOTH));
             } catch (FileNotFoundException e){
                 JLabel errorMessage = new JLabel("The program could not find the media files.");
                 JOptionPane.showConfirmDialog(frame, errorMessage, "File not found!", JOptionPane.DEFAULT_OPTION);
                 System.exit(0);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
             }
 
             frame = new JFrame("Pastryeam");
@@ -324,17 +329,30 @@ public class MainFrame extends JFrame {
 
             int counter = 0;
             for (Media m : displayedMedia) {
+                // Add 8 movies per row - decision made to fit size
                 constraints.gridy = counter / 8;
+                constraints.fill = GridBagConstraints.BOTH;
 
+                JLayeredPane coverView = new JLayeredPane();
                 JLabel coverImg = new JLabel(new ImageIcon(m.getCoverImage()));
-                // coverImg.setToolTipText(m.getTitle());
                 coverImg.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseReleased(MouseEvent e) {
                         mediaPopup(m);
                     }
                 });
-                content.add(coverImg, constraints);
+                coverImg.setBounds(5, 5, 140, 209);
+                coverView.add(coverImg, JLayeredPane.DEFAULT_LAYER);
+                coverView.setPreferredSize(new Dimension(140, 209));
+
+                if (m.isFavorite()) {
+                    JLabel favoriteIcon = new JLabel(favoriteImg);
+                    favoriteIcon.setBounds(75, 10, 64, 64);
+                    coverView.add(favoriteIcon, JLayeredPane.PALETTE_LAYER);
+                }
+
+                content.add(coverView, constraints);
+
                 counter++;
             }
 

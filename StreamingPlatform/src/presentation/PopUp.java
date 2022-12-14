@@ -15,6 +15,7 @@ public class PopUp extends JPanel {
     JComboBox<String> seasons;
     JComboBox<String> episodes;
     int selectedSeason = 0;
+    int selectedEpisode = 0;
     int episodeAmount = 0;
 
     Color backgroundColor = new Color(80, 80, 80);
@@ -37,7 +38,7 @@ public class PopUp extends JPanel {
         JLabel leftContent = cover();
 
         // Negate invisible borders on cover JLabel
-        leftContent.setBorder(BorderFactory.createEmptyBorder(0,-48,0,0));
+        leftContent.setBorder(BorderFactory.createEmptyBorder(0,-40,0,0));
         add(leftContent, c);
 
         c.weightx = 3.0;
@@ -134,10 +135,11 @@ public class PopUp extends JPanel {
 
     private void populateEpisodes() {
         episodes = new JComboBox<>();
-
         for (int i = 0; i < episodeAmount; i++) {
             episodes.addItem("Episode " + (i+1));
         }
+        episodes.setSelectedIndex(selectedEpisode);
+        episodes.addActionListener(e -> selectEpisode());
     }
 
     private JLabel cover() {
@@ -174,6 +176,10 @@ public class PopUp extends JPanel {
         episodeAmount = ((Series) media).getSeasons().get(selectedSeason).getEpisodes().size();
 
         update();
+    }
+
+    private void selectEpisode() {
+        selectedEpisode = episodes.getSelectedIndex();
     }
 
     private void favoriteMedia() {
