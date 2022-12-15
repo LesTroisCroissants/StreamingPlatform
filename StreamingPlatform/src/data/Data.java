@@ -1,7 +1,6 @@
 package data;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.util.*;
 
 public class Data implements DataAccess {

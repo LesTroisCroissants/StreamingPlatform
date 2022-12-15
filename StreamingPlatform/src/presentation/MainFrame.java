@@ -352,7 +352,7 @@ public class MainFrame extends JFrame {
                 counter++;
             }
 
-             // TODO find prettier way to add empty space in the grid
+             // Fill out empty space in the GridBagLayout
             int empty = 8 - (counter + 1 % 8) + 1;
             constraints.weightx = 3.0;
             for (int i = 0; i < empty; i++) {
