@@ -49,7 +49,9 @@ public class MainFrame extends JFrame {
         private static ImageIcon favoriteImg;
         private static final Color backgroundColor = new Color(28,28,28);
 
-
+        /**
+         * Initializing method run when starting the program.
+         */
         private static void init(){
             sortByRating = false;
             sortByYear = false;
@@ -97,6 +99,10 @@ public class MainFrame extends JFrame {
             });
         }
 
+        /**
+         * Tries to save favorites to file and exit the program.
+         * Displays popup with error if exception is caught.
+         */
         private static void trySaveAndClose(){
             try {
                 mediaRegistry.saveFavorites();
@@ -113,7 +119,10 @@ public class MainFrame extends JFrame {
                 }
             }
         }
-        
+
+        /**
+         * Creates the menubar for the program.
+         */
         private static JMenuBar createMenuBar(){
             JMenuBar menuBar = new JMenuBar();
 
@@ -128,6 +137,9 @@ public class MainFrame extends JFrame {
             return menuBar;
         }
 
+        /**
+         * Creates the top part of the menubar.
+         */
         private static JPanel createTopPanel(){
             JPanel panel = new JPanel();
 
@@ -210,6 +222,7 @@ public class MainFrame extends JFrame {
             return panel;
         }
 
+        // Creates the bottom part the menubar
         private static JPanel createBottomPanel(){
             JPanel panel = new JPanel();
 
@@ -305,6 +318,9 @@ public class MainFrame extends JFrame {
         }
 
 
+        /**
+         * Creates the main panel which holds the content.
+         */
         private static JLayeredPane createMainPanel(){
             JPanel content = new JPanel();
             content.setLayout(new GridBagLayout());
@@ -372,25 +388,34 @@ public class MainFrame extends JFrame {
 
             JLayeredPane layered = new JLayeredPane();
 
+            // Subtracting pixels from the main content width on the Windows-OS, to be able to see the scrollbar
             int scrollWidth = System.getProperty("os.name").contains("Windows") ? 1265 : 1280;
 
             // Set size to fit rest of space
-            scroll.setBounds(0,0,scrollWidth,550);
+            scroll.setBounds(0,0, scrollWidth,550);
 
             layered.add(scroll, JLayeredPane.DEFAULT_LAYER);
 
             return layered;
         }
 
+        /**
+         * Sets the global "displayMedia" variable to the sorted media.
+         */
         private static void setDisplayedMedia(List<Media> media) {
             displayedMedia = sort(media);
         }
 
+        /**
+         * Sets the "selectedMedia" global variable to the given argument media,
+         * and sets the "categorizedMedia" to the category filtered version of the given argument media.
+         */
         private static void setSelectedMedia (List<Media> media) {
             selectedMedia = media;
             categorizedMedia = filterByCategory(media);
         }
 
+        // Sorts media by year, and flips between ascending and descending, for every time it is called.
         private static void setSortByYear() {
             order = !order;
             sortByYear = true;
@@ -414,6 +439,9 @@ public class MainFrame extends JFrame {
             updateContent();
         }
 
+        /**
+         * Sorts media given as parameter, depending on the global variables for sorting
+         */
         private static List<Media> sort(List<Media> m) {
             if (sortByRating) return mediaRegistry.sortRating(m, order);
             if (sortByYear) return mediaRegistry.sortYear(m, order);
@@ -454,7 +482,7 @@ public class MainFrame extends JFrame {
             JLabel popupClose = new JLabel("✖");
             popupClose.setFont(new Font("Sans-Serif", Font.PLAIN,28));
             popupClose.setBorder(BorderFactory.createEmptyBorder(5, 5,5,10));
-            popupClose.setForeground(new Color(255,255,255));
+            popupClose.setForeground(Color.white);
             popupClose.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseReleased(MouseEvent e) {
