@@ -151,8 +151,8 @@ public class MediaRegistry implements MediaInfo {
 
         List<Media> results = new ArrayList<>(resultsTitle);
 
-        List<Media> resultsCategory = filter(input).stream()
-                .filter(x -> !results.contains(x) && media.contains(x))
+        List<Media> resultsCategory = filter(input, media).stream()
+                .filter(x -> !results.contains(x))
                 .toList();
         results.addAll(resultsCategory);
 
@@ -171,8 +171,8 @@ public class MediaRegistry implements MediaInfo {
      * Filter by category
      */
     @Override
-    public List<Media> filter(String category) {
-        return getAllMedia().stream().filter(x -> x.getCategories().contains(category.toLowerCase())).toList();
+    public List<Media> filter(String category, List<Media> media) {
+        return new ArrayList<>(getAllMedia().stream().filter(x -> x.getCategories().contains(category.toLowerCase())).toList());
     }
 
     /**

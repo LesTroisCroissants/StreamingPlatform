@@ -4,6 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class MediaRegistryTests {
@@ -75,37 +77,41 @@ public class MediaRegistryTests {
     public void testFilter(){
         boolean mistakeObserved = false;
         String testCategory = mediaRegistry.getCategories().toArray()[0].toString().toLowerCase(); // is made lower case to simulate category data on media objects
-        for (Media m : mediaRegistry.filter(testCategory)){
-            if (!m.getCategories().contains(testCategory))
+        for (Media m : mediaRegistry.filter(testCategory, mediaRegistry.getAllMedia())){
+            if (!m.getCategories().contains(testCategory)) {
                 mistakeObserved = true;
+                break;
+            }
         }
 
         assertFalse(mistakeObserved); // tests if any media returned does not contain the particular category
-        assertTrue(mediaRegistry.filter(testCategory).size() > 0); // tests that the filtering is not empty
+        assertTrue(mediaRegistry.filter(testCategory, mediaRegistry.getAllMedia()).size() > 0); // tests that the filtering is not empty
     }
 
     @Test
     public void testSearch(){
+        List<Media> allMedia = mediaRegistry.getAllMedia();
+
         // tests empty search
-        assertEquals(mediaRegistry.search("", mediaRegistry.getAllMedia()), mediaRegistry.getAllMedia());
+        assertEquals(mediaRegistry.search("", allMedia), allMedia);
 
         // creates object for other tests
-        Media testMedia = mediaRegistry.getAllMedia().get(0);
+        Media testMedia = allMedia.get(0);
         String testCategory = testMedia.getCategories().toArray()[0].toString();
 
         // tests case sensitivity
-        assertEquals(mediaRegistry.search(testMedia.getTitle().toLowerCase(), mediaRegistry.getAllMedia()), mediaRegistry.search(testMedia.getTitle().toUpperCase(), mediaRegistry.getAllMedia()));
+        assertEquals(mediaRegistry.search(testMedia.getTitle().toLowerCase(), allMedia), mediaRegistry.search(testMedia.getTitle().toUpperCase(), allMedia));
 
         // tests category search
-        assertTrue(mediaRegistry.search(testCategory, mediaRegistry.getAllMedia())
-                .containsAll(mediaRegistry.filter(testCategory)));
+        assertTrue(mediaRegistry.search(testCategory, allMedia)
+                .containsAll(mediaRegistry.filter(testCategory, allMedia)));
 
         // tests case sensitivity in category search
-        assertTrue(mediaRegistry.search(testCategory.toUpperCase(), mediaRegistry.getAllMedia()).containsAll(mediaRegistry.filter(testCategory)));
+        assertTrue(mediaRegistry.search(testCategory.toUpperCase(), allMedia).containsAll(mediaRegistry.filter(testCategory, allMedia)));
 
         // tests filtered search
-        assertTrue(mediaRegistry.search(testMedia.getTitle(), mediaRegistry.filter(testCategory)).size() > 0);
-        assertTrue(mediaRegistry.filter(testCategory).containsAll(mediaRegistry.search(testMedia.getTitle(), mediaRegistry.filter(testCategory))));
+        assertTrue(mediaRegistry.search(testMedia.getTitle(), mediaRegistry.filter(testCategory, allMedia)).size() > 0);
+        assertTrue(mediaRegistry.filter(testCategory, allMedia).containsAll(mediaRegistry.search(testMedia.getTitle(), mediaRegistry.filter(testCategory, allMedia))));
     }
 
     @Test

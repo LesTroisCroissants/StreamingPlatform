@@ -463,7 +463,7 @@ public class MainFrame extends JFrame {
 
         private static List<Media> filterByCategory(List<Media> media){
             if (selectedCategory.equals("") || selectedCategory.equals("All categories")) return media;
-            return new ArrayList<>(media.stream().filter(x -> x.getCategories().contains(selectedCategory.toLowerCase())).toList());
+            return mediaRegistry.filter(selectedCategory.toLowerCase(), media);
         }
 
 
