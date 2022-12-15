@@ -24,10 +24,6 @@ public class MediaRegistry implements MediaInfo {
         series = new ArrayList<>();
         initialize();
 
-        if (movies.size() == 0
-            && series.size() == 0) {
-            throw new RuntimeException("Data could not be retrieved!");
-        }
     }
 
     private void initialize() throws FileNotFoundException {
@@ -38,7 +34,6 @@ public class MediaRegistry implements MediaInfo {
                 movies.add(createMovie(movieInfo));
             } catch (IOException e) {
                 System.out.println("Image path could not be resolved for movie");
-                //System.out.println(e.getMessage());
             }
         }
 
@@ -47,8 +42,6 @@ public class MediaRegistry implements MediaInfo {
                 series.add(createSeries(seriesInfo));
             } catch (IOException e) {
                 System.out.println("Image path could not be resolved for series");
-                System.out.println(seriesInfo);
-                //System.out.println(e.getMessage());
             }
         }
 
@@ -119,7 +112,7 @@ public class MediaRegistry implements MediaInfo {
     private Set<String> parseCategories(String rawCategories) {
         return Set.of(rawCategories
                 .toLowerCase()
-                .replaceAll(" ", "")
+                .trim()
                 .split(",")
         );
     }
@@ -158,10 +151,8 @@ public class MediaRegistry implements MediaInfo {
 
         List<Media> results = new ArrayList<>(resultsTitle);
 
-        List<Media> resultsCategory = media.stream()
-                .filter(x -> x.getCategories()
-                        .contains(input.trim().toLowerCase())
-                            && !results.contains(x))
+        List<Media> resultsCategory = filter(input).stream()
+                .filter(x -> !results.contains(x) && media.contains(x))
                 .toList();
         results.addAll(resultsCategory);
 
@@ -181,7 +172,7 @@ public class MediaRegistry implements MediaInfo {
      */
     @Override
     public List<Media> filter(String category) {
-        return getAllMedia().stream().filter(x -> x.getCategories().contains(category)).toList();
+        return getAllMedia().stream().filter(x -> x.getCategories().contains(category.toLowerCase())).toList();
     }
 
     /**
