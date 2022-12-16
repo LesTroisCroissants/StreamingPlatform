@@ -8,14 +8,14 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PopUp extends JPanel {
-    Media media;
-    MediaInfo mediaRegistry;
-    JPanel info;
-    JComboBox<String> seasons;
-    JComboBox<String> episodes;
-    int selectedSeason = 0;
-    int selectedEpisode = 0;
-    int episodeAmount = 0;
+    private final Media media;
+    private final MediaInfo mediaRegistry;
+    private JPanel info;
+    private JComboBox<String> seasons;
+    private JComboBox<String> episodes;
+    private int selectedSeason = 0;
+    private int selectedEpisode = 0;
+    private int episodeAmount = 0;
 
     Color backgroundColor = new Color(80, 80, 80);
 
