@@ -4,9 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import data.DataAccess;
 import data.Data;
@@ -110,11 +108,11 @@ public class MediaRegistry implements MediaInfo {
     };
 
     private Set<String> parseCategories(String rawCategories) {
-        return Set.of(rawCategories
-                .toLowerCase()
-                .trim()
-                .split(",")
-        );
+        Set<String> categories = new HashSet<>();
+        for (String category : rawCategories.toLowerCase().split(",")) {
+            categories.add(category.trim());
+        }
+        return categories;
     }
 
     private BufferedImage getCoverImage(String path) throws IOException {

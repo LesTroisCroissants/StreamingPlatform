@@ -170,6 +170,7 @@ public class PopUp extends JPanel {
 
     private void selectSeason() {
         selectedSeason = seasons.getSelectedIndex();
+        selectedEpisode = 0;
         episodeAmount = ((Series) media).getSeasons().get(selectedSeason).getEpisodes().size();
 
         update();
